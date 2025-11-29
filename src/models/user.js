@@ -62,6 +62,12 @@ const userSchema = new mongoose.Schema({
 
         }
     ],
+    role: {
+        type: String,
+        trim: true,
+        enum: ['buyer', 'seller', 'owner'],
+        default: 'buyer'
+    },
     joined: {
         type: Date,
         default: Date.now()
@@ -70,7 +76,7 @@ const userSchema = new mongoose.Schema({
 
 })
 
-const User = mongoose.model('users', userSchema)
+const User = mongoose.models.users || mongoose.model("users", userSchema);
 
 
 export default User
