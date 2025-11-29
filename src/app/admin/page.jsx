@@ -2,8 +2,8 @@ import React from 'react'
 
 const Admin = () => {
   return (
-    <div>
-      <h1>Admin</h1>
+    <div className='w-full flex items-center justify-center min-h-screen'>
+      <h1 className='text-3xl font-semibold text-center'>Welcome to Admin Panel</h1>
     </div>
   )
 }

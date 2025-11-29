@@ -18,7 +18,7 @@ const Login = () => {
   const handleLogin = async(e)=>{
     e.preventDefault()
     try {
-      const response= await axios.post('http://localhost:3000/api/user/login', data, {withCredentials: true})
+      const response= await axios.post('/api/user/login', data, {withCredentials: true})
       alert(response.data.message)
     } catch (error) {
       console.log(error || "Failed to login")
