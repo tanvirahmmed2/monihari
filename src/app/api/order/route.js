@@ -45,9 +45,30 @@ export async function POST(req) {
 
 export async function GET() {
     try {
+        await ConnectDB()
+
+        const orders = await Order.find({}).sort({ _id: -1 })
+
+        if (!orders || orders === null) {
+            return NextResponse.json({
+                success: false,
+                message: "No order available"
+            }, { status: 400 })
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: "successfully fetched orders",
+            payload: orders
+
+        }, { status: 200 })
         
     } catch (error) {
-        
+        return NextResponse.json({
+            success: false,
+            message: "Failed to fetch order",
+            error: error
+        }, { status: 500 })
     }
-    
+
 }
