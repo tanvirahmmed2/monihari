@@ -15,7 +15,7 @@ export async function POST(req) {
                 message: 'All required fields must be filled'
             }, { status: 400 })
         }
-        const existUser = await User.findOne({ email })
+        const existUser = await User.findOne({ email})
         if (existUser) {
             return NextResponse.json({
                 success: false,
