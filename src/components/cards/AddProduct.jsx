@@ -10,7 +10,7 @@ const AddProduct = () => {
         price: '',
         wholeSalePrice: '',
         quantity: '',
-        image: ''
+        image: null
 
     })
 
@@ -26,22 +26,37 @@ const AddProduct = () => {
     }
 
     const handleAddProduct = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
+
         try {
             const formData = new FormData();
 
-            for (let key in data) {
-                formData.append(key, data[key]);
+            formData.append("title", data.title);
+            formData.append("category", data.category);
+            formData.append("description", data.description);
+            formData.append("price", data.price);
+            formData.append("wholeSalePrice", data.wholeSalePrice);
+            formData.append("quantity", data.quantity);
+
+            if (data.image) {
+                formData.append("image", data.image);
             }
 
-            const response = await axios.post('/api/products', formData, { withCredentials: true })
-            alert(response.data.message)
+            const response = await axios.post('/api/products', formData, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+
+            alert(response.data.message);
+
         } catch (error) {
-            console.log(error)
-
+            console.log(error);
+            alert("Something went wrong");
         }
+    };
 
-    }
 
 
     return (
@@ -77,11 +92,11 @@ const AddProduct = () => {
             </div>
             <div className='w-full flex flex-col gap-2'>
                 <label htmlFor="quantity">Quantity</label>
-                <input type="number" id='quantitye' name='quantity' min={1} required value={data.quantity} onChange={handleChange} className='px-2 p-1 border-2 rounded-lg outline-none border-black/15' />
+                <input type="number" id='quantity' name='quantity' min={1} required value={data.quantity} onChange={handleChange} className='px-2 p-1 border-2 rounded-lg outline-none border-black/15' />
             </div>
             <div className='w-full flex flex-col gap-2'>
                 <label htmlFor="image">Image</label>
-                <input type="file" id='image' name='image' accept='image/*' className='px-2 p-1 border-2 rounded-lg outline-none border-black/15' />
+                <input type="file" id='image' name='image' accept='image/*' required onChange={handleChange} className='px-2 p-1 border-2 rounded-lg outline-none border-black/15' />
             </div>
             <button type='submit' className='p-1 bg-black text-white rounded-3xl w-full cursor-pointer'>Submit</button>
         </form>
