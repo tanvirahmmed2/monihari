@@ -17,7 +17,7 @@ export async function POST(req) {
     const wholeSalePrice = formData.get("wholeSalePrice");
     const discount = formData.get("discount");
     const quantity = formData.get("quantity");
-    const imageFile = formData.get("image"); 
+    const imageFile = formData.get("image");
 
     if (!title || !category || !description || !price || !wholeSalePrice || !quantity) {
       return NextResponse.json(
@@ -30,7 +30,7 @@ export async function POST(req) {
     }
 
     const slug = slugify(title.trim(), { lower: true });
-    
+
     const existProduct = await Product.findOne({ slug });
 
     if (existProduct) {
@@ -53,10 +53,10 @@ export async function POST(req) {
       );
     }
 
-    
+
     const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
 
-    
+
     const uploadedImage = await cloudinary.uploader.upload_stream(
       { folder: "monihari" },
       (error, result) => {
@@ -77,7 +77,7 @@ export async function POST(req) {
 
     const cloudImage = await uploadPromise;
 
-    
+
     const newProduct = new Product({
       title,
       category,
@@ -111,4 +111,31 @@ export async function POST(req) {
       { status: 500 }
     );
   }
+}
+
+
+export async function GET() {
+  try {
+    await ConnectDB()
+    const products = await Product.find().sort({ _id: -1 })
+
+    if (!products || products === null) {
+      return NextResponse.json({
+        success: false,
+        message: "No product data available"
+      }, { status: 400 })
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "successfully fetched product data",
+      payload: products
+    }, { status: 200 })
+  } catch (error) {
+    return NextResponse.json({
+      success: false,
+      message: 'Failed to fetch data'
+    }, { status: 500 })
+  }
+
 }
