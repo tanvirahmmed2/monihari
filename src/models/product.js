@@ -11,6 +11,10 @@ const productScehma= new mongoose.Schema({
         required: true,
         trim: true
     },
+    description:{
+        type: String,
+        trim: true
+    },
     price:{
         type: String,
         required: true,
@@ -23,7 +27,8 @@ const productScehma= new mongoose.Schema({
     },
     discount:{
         type: String,
-        trim: true
+        trim: true,
+        default:''
     },
     quantity:{
         type: String,
