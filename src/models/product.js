@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const productScehma= new mongoose.Schema({
+const productSchema= new mongoose.Schema({
     title:{
         type: String,
         required: true,
@@ -16,24 +16,19 @@ const productScehma= new mongoose.Schema({
         trim: true
     },
     price:{
-        type: String,
+        type: Number,
         required: true,
-        trim: true
     },
     wholeSalePrice:{
-        type: String,
-        required: true,
-        trim: true
+        type: Number,
     },
     discount:{
-        type: String,
-        trim: true,
-        default:''
+        type: Number,
+        default:null
     },
     quantity:{
-        type: String,
+        type: Number,
         required: true,
-        trim: true
     },
     stock:{
         type: Boolean,
@@ -41,12 +36,12 @@ const productScehma= new mongoose.Schema({
     },
     addedAt:{
         type: Date,
-        default: Date.now()
+        default: Date.now
     },
     
 })
 
 
-const Product= mongoose.model("products", productScehma)
+const Product= mongoose.model("products", productSchema)
 
 export default Product

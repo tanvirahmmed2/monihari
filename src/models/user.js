@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
+        unique: true,
         trim: true
     },
     phone: {
@@ -33,13 +34,34 @@ const userSchema = new mongoose.Schema({
     passwordResetToken: {
         type: String,
         trim: true,
-        default: ''
+        default: null
     },
     resetTokenValidity: {
         type: Date,
         trim: true,
-        default: ''
+        default: null
     },
+    cart: [
+        {
+            title: { type: String, required: true },
+            productId: { type: String, required: true, trim: true }
+
+        }
+    ],
+    saved: [
+        {
+            title: { type: String, required: true },
+            productId: { type: String, required: true, trim: true }
+
+        }
+    ],
+    orders: [
+        {
+            orderId: { type: String, required: true, trime: true },
+            orderStatus: { type: String, required: true, trim: true }
+
+        }
+    ],
     joined: {
         type: Date,
         default: Date.now()

@@ -7,8 +7,8 @@ const Navbar = () => {
         <nav className='w-full h-14 bg-black text-white flex flex-row items-center justify-between px-4'>
             <Link href="/" className='text-2xl font-semibold font-sans'>Manager</Link>
             <div className='flex flex-row items-center justify-center gap-4'>
-              <Link href="/users">User</Link>
-              <Link href="/events">Events</Link>
+              <Link href="/saved">Saved</Link>
+              <Link href="/cart">Cart</Link>
               <Link href="/login">Login</Link>
               <Link href="/register">Sign Up</Link>
             </div>
