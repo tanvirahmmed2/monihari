@@ -25,7 +25,8 @@ const orderSchema = new mongoose.Schema({
         {
             title: { type: String, required: true },
             productId: { type: String, required: true, trim: true },
-            price: { type: String, required: true }
+            price: { type: String, required: true },
+            quantity: { type: Number, required: true }
         }
     ],
     paymentStatus: {
@@ -39,7 +40,7 @@ const orderSchema = new mongoose.Schema({
         enum: ['pending', 'confirmed', 'canceled', 'delivered'],
         default: 'pending'
     },
-    orderedAt:{
+    orderedAt: {
         type: Date,
         default: Date.now
     }
