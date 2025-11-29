@@ -1,5 +1,4 @@
 import AddProduct from '@/components/cards/AddProduct'
-import ProductCard from '@/components/cards/ProductCard';
 import React from 'react'
 
 const Products = async() => {
@@ -23,9 +22,13 @@ const Products = async() => {
       <div className='w-full flex flex-col items-center justify-center gap-4'>
         <h1 className='text-xl font-semibold text-center'>Products</h1>
         {
-          data!==null? <div>{
+          data!==null? <div className='w-full flex flex-col items-center justify-center gap-4'>{
             data.map((product)=>(
-              <ProductCard key={product._id} {...product}/>
+              <div key={product._id} className='w-1/2 flex flex-row items-center justify-between'>
+                <p>{product.title}</p>
+                <p>{product.price}</p>
+                <div>...</div>
+              </div>
             ))
             }</div>: <p>No data available</p>
         }

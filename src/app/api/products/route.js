@@ -139,3 +139,42 @@ export async function GET() {
   }
 
 }
+
+
+export async function DELETE(req) {
+  try {
+    await ConnectDB()
+
+    const { id } = await req.json()
+    if (!id) {
+      return NextResponse.json({
+        success: false,
+        message: 'Product id didnot recieved'
+      }, { status: 400 })
+    }
+    const product = await Product.findById(id)
+    if (!product || product === null) {
+      return NextResponse.json({
+        success: false,
+        message: 'Product not found'
+      }, { status: 400 })
+    }
+
+    await cloudinary.uploader.destroy(product.imageId)
+
+    await Product.findByIdAndDelete(id)
+
+    return NextResponse.json({
+      success: true,
+      message: "successfully removed product"
+    }, { status: 200 })
+
+
+  } catch (error) {
+    return NextResponse.json({
+      success: false,
+      message: 'Failed to delete product'
+    }, { status: 500 })
+  }
+
+}
