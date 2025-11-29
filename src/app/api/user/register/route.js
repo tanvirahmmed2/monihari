@@ -43,12 +43,3 @@ export async function POST(req) {
 }
 
 
-export async function GET() {
-    try {
-
-    } catch (error) {
-        return NextResponse.json({})
-
-    }
-
-}
