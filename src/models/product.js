@@ -5,7 +5,40 @@ const productScehma= new mongoose.Schema({
         type: String,
         required: true,
         trim: true
-    }
+    },
+    category:{
+        type: String,
+        required: true,
+        trim: true
+    },
+    price:{
+        type: String,
+        required: true,
+        trim: true
+    },
+    wholeSalePrice:{
+        type: String,
+        required: true,
+        trim: true
+    },
+    discount:{
+        type: String,
+        trim: true
+    },
+    quantity:{
+        type: String,
+        required: true,
+        trim: true
+    },
+    stock:{
+        type: Boolean,
+        default: true,
+    },
+    addedAt:{
+        type: Date,
+        default: Date.now()
+    },
+    
 })
 
 
