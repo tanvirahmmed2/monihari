@@ -5,7 +5,10 @@ import Footer from "@/components/UI/Footer";
 
 
 export const metadata = {
-  title: "Monihari",
+  title: {
+    default: 'Monihari',
+    templete: '%s | Monihari'
+  },
   description: "E-commerce shop for local business",
 };
 

@@ -3,7 +3,9 @@
 
 const Error = () => {
   return (
-    <h1 className='text-2xl font-bold'>Something went wrong</h1>
+    <div className='w-full flex flex-col items-center justify-center min-h-screen'>
+      <h1 className='text-2xl font-bold'>Error 404</h1>
+    </div>
   )
 }
 
