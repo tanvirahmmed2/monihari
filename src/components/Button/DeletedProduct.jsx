@@ -16,7 +16,7 @@ const DeletedProduct = ({id}) => {
     }
 
   return (
-    <button onClick={deleteProduct}>Delete</button>
+    <button onClick={deleteProduct} className='cursor-pointer bg-slate-300 p-1 px-5 rounded-lg'>Delete</button>
   )
 }
 

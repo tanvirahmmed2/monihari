@@ -131,7 +131,7 @@ export async function GET() {
 }
 
 
-export async function DELETE(req, ) {
+export async function DELETE(req) {
   try {
     await ConnectDB()
 

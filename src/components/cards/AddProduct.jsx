@@ -60,7 +60,7 @@ const AddProduct = () => {
 
 
     return (
-        <form onSubmit={handleAddProduct} className='w-1/2 flex flex-col items-center justify-center gap-4'>
+        <form onSubmit={handleAddProduct} className='w-full lg:w-1/2 flex flex-col items-center justify-center gap-4'>
             <div className='w-full flex flex-col gap-2'>
                 <label htmlFor="title">Title</label>
                 <input type="text" id='title' name='title' required onChange={handleChange} value={data.title} className='px-2 p-1 border-2 rounded-lg outline-none border-black/15' />
