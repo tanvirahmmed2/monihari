@@ -24,6 +24,7 @@ const Login = () => {
       window.location.replace('/profile')
     } catch (error) {
       console.log(error || "Failed to login")
+      alert(error?.response?.data?.message)
       
       
     }

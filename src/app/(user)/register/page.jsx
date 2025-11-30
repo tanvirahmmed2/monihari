@@ -24,8 +24,10 @@ const Register = () => {
     try {
       const response= await axios.post('/api/user/register', data, {withCredentials: true})
       alert(response.data.message)
+      window.location.replace('/login')
     } catch (error) {
       console.log(error)
+      alert(error?.response?.data?.message)
     }
     
   }

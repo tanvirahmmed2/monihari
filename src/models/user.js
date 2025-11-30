@@ -66,7 +66,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true,
         enum: ['user', 'seller', 'admin'],
-        default: 'buyer'
+        default: 'user'
     },
     joined: {
         type: Date,
