@@ -49,7 +49,7 @@ const Product = () => {
     <div className='w-full min-h-screen flex flex-col items-center px-2 py-6 gap-4'>
       <h1>Product Overview</h1>
 
-      <div className='flex flex-col items-center gap-4 w-full md:w-1/2'>
+      <div className='flex flex-col items-center gap-4 w-full md:w-3/4'>
         <h1 className='text-2xl font-semibold text-center'>{data.title}</h1>
 
         <Image
@@ -57,7 +57,7 @@ const Product = () => {
           alt={data.title}
           width={1000}
           height={1000}
-          className='w-full h-[400px] border-2 border-black/10 object-cover'
+          className='w-full h-[500px] border-2 border-black/10 object-cover'
         />
 
         <div className='w-full flex flex-row items-start justify-between'>
@@ -78,7 +78,7 @@ const Product = () => {
         {cateData && (
           <div className='w-full flex flex-col items-center justify-center gap-8 mt-10'>
             <h1 className='text-3xl'>You Might Also Like</h1>
-            <div className='w-full grid grid-cols-2 sm:grid-cols-3 gap-2 p-2'>
+            <div className='w-full grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2 p-2'>
 
               {cateData.map((product) => (
                 <ProductCard key={product._id} {...product} />

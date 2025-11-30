@@ -35,6 +35,7 @@ const AddProduct = () => {
             const formData = new FormData();
 
             formData.append("title", data.title);
+            formData.append("unit", data.unit);
             formData.append("category", data.category);
             formData.append("description", data.description);
             formData.append("price", data.price);
@@ -56,7 +57,7 @@ const AddProduct = () => {
 
         } catch (error) {
             console.log(error);
-            alert("Something went wrong");
+            alert(error?.response?.data?.message)
         }
     };
 
@@ -90,7 +91,7 @@ const AddProduct = () => {
             </div>
             <div className='w-full flex flex-col gap-2'>
                 <label htmlFor="description">Description</label>
-                <input type="text" id='description' name='description' required value={data.description} onChange={handleChange} className='px-2 p-1 border-2 rounded-lg outline-none border-black/15' />
+                <textarea type="text" id='description' name='description' required value={data.description} onChange={handleChange} className='px-2 p-1 border-2 rounded-lg outline-none border-black/15' />
             </div>
             <div className='w-full flex flex-col gap-2'>
                 <label htmlFor="price">Price</label>
