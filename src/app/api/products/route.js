@@ -56,15 +56,7 @@ export async function POST(req) {
 
     const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
 
-
-    const uploadedImage = await cloudinary.uploader.upload_stream(
-      { folder: "monihari" },
-      (error, result) => {
-        if (error) throw new Error("Cloudinary upload failed");
-      }
-    );
-
-    const uploadPromise = new Promise((resolve, reject) => {
+    const cloudImage = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { folder: "monihari" },
         (err, result) => {
@@ -74,8 +66,6 @@ export async function POST(req) {
       );
       stream.end(imageBuffer);
     });
-
-    const cloudImage = await uploadPromise;
 
 
     const newProduct = new Product({
