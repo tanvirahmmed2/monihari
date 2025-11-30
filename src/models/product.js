@@ -35,6 +35,10 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    oldPrice: {
+        type: Number,
+        default: null
+    },
     wholeSalePrice: {
         type: Number,
     },
@@ -49,6 +53,13 @@ const productSchema = new mongoose.Schema({
     stock: {
         type: Boolean,
         default: true,
+    },
+    unit:{
+        type: String,
+        trim: true,
+        enum:['kg', 'litter', 'dozen', 'gram', 'ml'],
+        required: true,
+        default:'kg'
     },
     addedAt: {
         type: Date,

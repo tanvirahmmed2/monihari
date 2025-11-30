@@ -28,7 +28,7 @@ const Products = async () => {
             data.map((product) => (
               <div key={product._id} className='w-full lg:w-1/2 flex flex-row items-center justify-between bg-gray-200 gap-6 p-4'>
                 <Link href={`/products/${product.slug}`} className='w-full'>{product.title}</Link>
-                <p className='px-8 flex flex-row items-center justify-center'><span className='text-[10px] italic'>BDT</span> {product.price}</p>
+                <p className='px-8 flex flex-row items-center justify-center'><span className='text-[10px] italic'>BDT</span>  {product.price}</p>
                 <div className=' flex flex-col gap-2  items-end'>
                 
                     <Link className='cursor-pointer bg-slate-300 p-1 px-4 rounded-lg' href={`/products/update/${product._id}`}>Update</Link>

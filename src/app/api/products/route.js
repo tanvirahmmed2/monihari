@@ -11,6 +11,7 @@ export async function POST(req) {
     const formData = await req.formData();
 
     const title = formData.get("title");
+    const unit = formData.get("unit");
     const category = formData.get("category");
     const description = formData.get("description");
     const price = formData.get("price");
@@ -19,7 +20,7 @@ export async function POST(req) {
     const quantity = formData.get("quantity");
     const imageFile = formData.get("image");
 
-    if (!title || !category || !description || !price || !wholeSalePrice || !quantity) {
+    if (!title || !category || !description || !price || !wholeSalePrice || !quantity || !unit) {
       return NextResponse.json(
         {
           success: false,

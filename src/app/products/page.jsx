@@ -11,7 +11,7 @@ const Products =async () => {
   console.log(data)
   return (
     <div className='w-full min-h-screen flex flex-col items-center gap-6 py-6'>
-      <h1>Products</h1>
+      <h1 className='text-2xl font-semibold text-center'>Products</h1>
       <div className='w-full max-w-7xl'>
         {
           data!==null? <div className='w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 p-2'>
