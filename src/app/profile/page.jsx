@@ -1,18 +1,14 @@
-import React from 'react'
-import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
+import React from 'react'
 
 const Profile = async() => {
-    const token= (await cookies()).get('user_token')?.value
-    if(!token){
-        alert('Please login')
-        window.location.replace('/login')
-    }
-    const data= jwt.verify(token, process.env.JWT_SECRET)
-    
+
+    const token = await (await cookies()).get('user_token')?.value
+
+
   return (
     <div>
-      <h1>Name: {data.email}</h1>
+      <h1>Profile</h1>
     </div>
   )
 }
