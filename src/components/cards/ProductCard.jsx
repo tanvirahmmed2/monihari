@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import SaveProduct from '../Button/SaveProduct';
 
 const ProductCard = ({ _id, title, slug, price, image, unit }) => {
   const imgSrc = image || '/fallback.jpeg'; 
@@ -8,23 +9,20 @@ const ProductCard = ({ _id, title, slug, price, image, unit }) => {
   return (
     <Link
       href={`/products/${slug}`}
-      className="w-full rounded-lg flex flex-col items-center justify-between p-1 border-2 border-black/10 gap-2"
+      className="w-full rounded-lg flex flex-col items-center justify-between p-1 border-2 border-black/10 gap-2 relative group"
     >
       <Image
         src={imgSrc}
         alt={slug || title}
         width={200}
         height={200}
-        className="w-full h-[200px] object-cover rounded-lg"
+        className="w-full h-[250px] object-cover rounded-lg"
       />
-      <h1 className="w-full text-sm">{title}</h1>
-      <div className="w-full flex flex-row items-center justify-between">
-        <p className='flex flex-row gap-2'>
-          <span className="text-[10px] italic">BDT</span>
-          <span className="text-2xl font-semibold">{price}</span>
-        </p>
-        <p className='text-xs'>(per {unit})</p>
+      <div className='w-full group-hover:flex flex-col items-center justify-center gap-2 absolute bottom-0 p-2 bg-white hidden '>
+        <p className=" text-sm">BDT {price}</p>
+        <h1 className="font-semibold text-sm">{title}</h1>
       </div>
+      <SaveProduct/>
     </Link>
   )
 }
