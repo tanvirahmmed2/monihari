@@ -1,32 +1,29 @@
-import { cookies } from "next/headers";
-import React from "react";
+'use client'
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
 
-const Profile = async () => {
-  let user = null;
+const Profile = () => {
+    const [user, setUser]= useState(null)
 
-  try {
-    const token = (await cookies()).get("user_token")?.value;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response= await axios.get('/api/profile', {withCredentials: true})
+        setUser(response.data.payload)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchData()
+  }, [])
+  console.log(user)
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/profile`, {
-      method: "GET",
-      cache: "no-store",
-      headers: {
-        Cookie: `user_token=${token}`,
-      },
-    });
-
-    const data = await res.json();
-    user = data.payload;
-  } catch (error) {
-    console.log(error);
-  }
-
+  
   return (
-    <div>
-      <h1>Profile</h1>
-      <pre>{JSON.stringify(user, null, 2)}</pre>
-    </div>
-  );
-};
+    <div className="w-full min-h-screen flex items-center gap-4 flex-col">
 
-export default Profile;
+    </div>
+  )
+}
+
+export default Profile
