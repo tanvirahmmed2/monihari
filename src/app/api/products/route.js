@@ -78,6 +78,7 @@ export async function POST(req) {
       discount,
       quantity,
       slug,
+      unit,
       image: cloudImage.secure_url,
       imageId: cloudImage.public_id,
     });
@@ -108,7 +109,7 @@ export async function POST(req) {
 export async function GET() {
   try {
     await ConnectDB()
-    const products = await Product.find().sort({ createdAt: -1 })
+    const products = await Product.find().sort({ addedAt: -1 })
 
     if (!products || products === null) {
       return NextResponse.json({

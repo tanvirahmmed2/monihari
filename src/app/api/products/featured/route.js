@@ -8,7 +8,7 @@ export async function GET() {
     try {
         await ConnectDB()
 
-        const products= await Product.find({}).sort({createdAt: -1}).limit(8)
+        const products= await Product.find({}).sort({addedAt: -1}).limit(8)
         if(!products || products=== null){
             return NextResponse.json({
                 success: false,

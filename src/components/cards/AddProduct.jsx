@@ -53,10 +53,21 @@ const AddProduct = () => {
             });
 
             alert(response.data.message);
+            setData({
+                title: '',
+                category: '',
+                description: '',
+                price: '',
+                wholeSalePrice: '',
+                quantity: '',
+                unit: '',
+                image: null
+
+            })
 
         } catch (error) {
             console.log(error);
-            alert(error?.response?.data?.message)
+            alert(error?.response?.data?.error)
         }
     };
 

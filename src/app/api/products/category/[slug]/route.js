@@ -10,7 +10,7 @@ export async function GET(req, { params }) {
         const tempCate = await params
         const category = tempCate.slug
 
-        const products = await Product.find({ category }).sort({ _id: -1 }).lean()
+        const products = await Product.find({ category }).sort({ addedAt: -1 }).lean()
 
         if (!products || products === null) {
             return NextResponse.json({
