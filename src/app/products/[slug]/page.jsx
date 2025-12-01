@@ -69,7 +69,7 @@ const Product = () => {
             <h1 className='text-2xl font-semibold text-center'>{data.title}</h1>
             {data.stock ? <div className='w-full flex flex-row items-center justify-between'>
               <p>Stock: Available</p>
-              <p>Availble: {data.quantity}</p>
+              <p>In stock: {data.quantity}</p>
             </div> : <p>Unavailable</p>}
             <p className='line-through text-xs text-red-300'>Old price: {data.oldPrice || 999}</p>
             <div className='flex flex-row gap-1 w-full items-center justify-between'>
