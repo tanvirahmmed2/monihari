@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-import SaveProduct from '../Button/SaveProduct';
 
 const ProductCard = ({ _id, title, slug, price, image, unit }) => {
   const imgSrc = image || '/fallback.jpeg'; 
@@ -22,7 +21,6 @@ const ProductCard = ({ _id, title, slug, price, image, unit }) => {
         <p className=" text-sm">BDT {price}</p>
         <h1 className="font-semibold text-sm">{title}</h1>
       </div>
-      <SaveProduct/>
     </Link>
   )
 }

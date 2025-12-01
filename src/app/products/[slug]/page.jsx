@@ -1,5 +1,6 @@
 'use client'
 import AddToCart from '@/components/Button/AddToCart'
+import SaveProduct from '@/components/Button/SaveProduct'
 import OrderQuantity from '@/components/cards/OrderQuantity'
 import ProductCard from '@/components/cards/ProductCard'
 import axios from 'axios'
@@ -77,7 +78,10 @@ const Product = () => {
               <span>Weight: {data.unit}</span>
             </div>
             <OrderQuantity quantity={{ orderQuantity, setOrderQuantity }} />
-            <AddToCart id={data._id} quantity={orderQuantity} />
+            <div className='w-full flex flex-row items-center justify-between gap-2'>
+              <SaveProduct id={data._id}/>
+              <AddToCart id={data._id} quantity={orderQuantity} />
+            </div>
 
             <p>{data.description}</p>
 

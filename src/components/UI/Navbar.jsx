@@ -16,14 +16,14 @@ const Navbar = async () => {
         <div className='flex flex-row items-center justify-center gap-4'>
           <div className='group w-auto h-14 flex items-center justify-center'>
             <Link className='' href="/products">Products</Link>
-            <div className='hidden group-hover:flex flex-col p-2 shadow-xs shadow-black absolute top-14 text-black rounded-lg gap-2 bg-white'>
-              <Link className='hover:scale-105 w-full' href="/products/category/rice&grains">Rice & Grains</Link>
-              <Link className='hover:scale-105 w-full' href="/products/category/frozenfood">Frozen Food</Link>
-              <Link className='hover:scale-105 w-full' href="/products/category/oil&ghee">Oil & Ghee</Link>
-              <Link className='hover:scale-105 w-full' href="/products/category/masala">Masala</Link>
-              <Link className='hover:scale-105 w-full' href="/products/category/snacks">Snacks</Link>
-              <Link className='hover:scale-105 w-full' href="/products/category/healthcare">Health Care</Link>
-              <Link className='hover:scale-105 w-full' href="/products/category/cleaning&household">Cleaning and Household</Link>
+            <div className='hidden group-hover:flex flex-col absolute top-14 rounded-lg '>
+              <Link className='hover:scale-105 w-full p-2 bg-emerald-50 hover:bg-white text-black' href="/products/category/rice&grains">Rice & Grains</Link>
+              <Link className='hover:scale-105 w-full p-2 bg-emerald-50 hover:bg-white text-black' href="/products/category/frozenfood">Frozen Food</Link>
+              <Link className='hover:scale-105 w-full p-2 bg-emerald-50 hover:bg-white text-black' href="/products/category/oil&ghee">Oil & Ghee</Link>
+              <Link className='hover:scale-105 w-full p-2 bg-emerald-50 hover:bg-white text-black' href="/products/category/masala">Masala</Link>
+              <Link className='hover:scale-105 w-full p-2 bg-emerald-50 hover:bg-white text-black' href="/products/category/snacks">Snacks</Link>
+              <Link className='hover:scale-105 w-full p-2 bg-emerald-50 hover:bg-white text-black' href="/products/category/healthcare">Health Care</Link>
+              <Link className='hover:scale-105 w-full p-2 bg-emerald-50 hover:bg-white text-black' href="/products/category/cleaning&household">Cleaning and Household</Link>
             </div>
           </div>
           <Link href="/saved">Saved</Link>
