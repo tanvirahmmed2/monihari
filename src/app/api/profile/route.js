@@ -8,39 +8,32 @@ export async function GET() {
   try {
     await ConnectDB();
 
+    // 1. Get token from cookies
     const token = (await cookies()).get("user_token")?.value;
 
     if (!token) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Please log in",
-        },
+        { success: false, message: "Please log in" },
         { status: 401 }
       );
     }
 
-    let data;
+    // 2. Verify JWT
+    let decoded;
     try {
-      data = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid or expired token",
-        },
+        { success: false, message: "Invalid or expired token" },
         { status: 401 }
       );
     }
 
-    const user = await User.findById(data.id).select("-password");
-
+    // 3. Fetch user (excluding password)
+    const user = await User.findById(decoded.id).select("-password");
     if (!user) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "User not found",
-        },
+        { success: false, message: "User not found" },
         { status: 404 }
       );
     }
@@ -53,12 +46,11 @@ export async function GET() {
       },
       { status: 200 }
     );
+
   } catch (error) {
+    console.error("Error in GET /profile:", error);
     return NextResponse.json(
-      {
-        success: false,
-        message: "Internal server error",
-      },
+      { success: false, message: "Internal server error" },
       { status: 500 }
     );
   }
