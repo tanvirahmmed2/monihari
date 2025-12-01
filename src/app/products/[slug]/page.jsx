@@ -61,7 +61,7 @@ const Product = () => {
               alt={data.title}
               width={1000}
               height={1000}
-              className='w-full h-[500px] border-2 border-black/10 object-cover'
+              className='w-full h-[400px]  sm:h-[500px] border-2 border-black/10 object-cover rounded-xl'
             />
           </div>
 
