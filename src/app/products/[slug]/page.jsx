@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react'
 
 const Product = () => {
   const { slug } = useParams()
-  const [orderQuantity, setOrderQuantity]= useState(1)
+  const [orderQuantity, setOrderQuantity] = useState(1)
   const [data, setData] = useState(null)
   const [cateData, setCateData] = useState(null)
 
@@ -50,30 +50,39 @@ const Product = () => {
       <h1>Product Overview</h1>
 
       <div className='flex flex-col items-center gap-4 w-full md:w-3/4'>
-        <h1 className='text-2xl font-semibold text-center'>{data.title}</h1>
 
-        <Image
-          src={data.image}
-          alt={data.title}
-          width={1000}
-          height={1000}
-          className='w-full h-[500px] border-2 border-black/10 object-cover'
-        />
-
-        <div className='w-full flex flex-row items-start justify-between'>
-          <p className='line-through italic text-red-300'>Old price: {data.oldPrice || 999}</p>
-          <div className='flex flex-row gap-1 items-center justify-center'>
-            <span>Price:</span>
-            <span className='text-xs'>BDT</span>
-            <span>{data.price}</span>
-            <span>/ {data.unit}</span>
+        <div>
+          <div>
+            <Image
+              src={data.image}
+              alt={data.title}
+              width={1000}
+              height={1000}
+              className='w-full h-[500px] border-2 border-black/10 object-cover'
+            />
           </div>
-          <OrderQuantity quantity={{orderQuantity, setOrderQuantity}}/>
-          <AddToCart id={data._id} />
+
+          <div>
+            <h1 className='text-2xl font-semibold text-center'>{data.title}</h1>
+
+
+
+            <div className='w-full flex flex-row items-start justify-between'>
+              <p className='line-through italic text-red-300'>Old price: {data.oldPrice || 999}</p>
+              <div className='flex flex-row gap-1 items-center justify-center'>
+                <span>Price:</span>
+                <span className='text-xs'>BDT</span>
+                <span>{data.price}</span>
+                <span>/ {data.unit}</span>
+              </div>
+              <OrderQuantity quantity={{ orderQuantity, setOrderQuantity }} />
+              <AddToCart id={data._id} />
+            </div>
+            <p>{data.description}</p>
+
+          </div>
+
         </div>
-        <p>{data.description}</p>
-
-
 
         {cateData && (
           <div className='w-full flex flex-col items-center justify-center gap-8 mt-10'>
