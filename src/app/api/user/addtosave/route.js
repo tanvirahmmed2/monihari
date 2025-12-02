@@ -72,6 +72,8 @@ export async function POST(req) {
 
         user.saved.push({
             title: product.title,
+            slug:product.slug,
+            price: product.price,
             productId: productId,
         })
 

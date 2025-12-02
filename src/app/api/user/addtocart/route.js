@@ -73,6 +73,7 @@ export async function POST(req) {
 
         user.cart.push({
             title: product.title,
+            slug: product.slug,
             productId: productId,
             quantity: quantity,
             price: price

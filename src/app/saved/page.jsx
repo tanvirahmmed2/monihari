@@ -29,15 +29,13 @@ const Saved = () => {
           <h1 className="text-2xl font-semibold">View Cart Item</h1>
           <div className="w-full flex flex-row items-center justify-between gap-6 bg-slate-200 p-2">
                 <p className="w-full">Title</p>
-                <p>Quantity</p>
                 <p>Price</p>
                 <p>Action</p>
               </div>
           {
             data.map((product) => (
               <div key={product.productId} className="w-full flex flex-row items-center justify-between gap-6 bg-slate-200 p-2">
-                <p className="w-full">{product.title}</p>
-                <p>{product.quantity}</p>
+                <Link href={`/products/${product.slug}`} className="w-full">{product.title}</Link>
                 <p>{product.price}</p>
                 <RemoveFromSave productId={product.productId}/>
               </div>

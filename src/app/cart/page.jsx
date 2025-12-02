@@ -38,7 +38,7 @@ const Saved = () => {
           {
             data.map((product) => (
               <div key={product.productId} className="w-full flex flex-row items-center justify-between gap-6 bg-slate-200 p-2">
-                <p className="w-full">{product.title}</p>
+                <Link href={`/products/${product.slug}`} className="w-full">{product.title}</Link>
                 <p>{product.quantity}</p>
                 <p>{product.price}</p>
                 <RemoveFromCart productId={product.productId}/>

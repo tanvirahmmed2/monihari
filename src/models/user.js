@@ -44,6 +44,7 @@ const userSchema = new mongoose.Schema({
     cart: [
         {
             title: { type: String, required: true },
+            slug: { type: String, required: true },
             productId: { type: String, required: true, trim: true },
             quantity: {type: Number, required: true},
             price: {type: Number, required: true},
@@ -52,6 +53,8 @@ const userSchema = new mongoose.Schema({
     saved: [
         {
             title: { type: String, required: true },
+            slug: { type: String, required: true },
+            price: { type: String, required: true },
             productId: { type: String, required: true, trim: true }
         }
     ],
