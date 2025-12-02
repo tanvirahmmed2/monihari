@@ -61,7 +61,7 @@ const Product = () => {
               alt={data.title}
               width={1000}
               height={1000}
-              className='w-full h-[400px]  sm:h-[500px] border-2 border-black/10 object-cover rounded-xl'
+              className='w-full h-[400px]  md:h-[500px] border-2 border-black/10 object-cover rounded-xl'
             />
           </div>
 
@@ -79,7 +79,7 @@ const Product = () => {
             </div>
             <OrderQuantity quantity={{ orderQuantity, setOrderQuantity }} />
             <div className='w-full flex flex-row items-center justify-between gap-2'>
-              <SaveProduct id={data._id}/>
+              <SaveProduct productId={data._id}/>
               <AddToCart productId={data._id} quantity={orderQuantity} />
             </div>
 
