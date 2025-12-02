@@ -31,7 +31,7 @@ const Products = async () => {
                 <p className='px-8 flex flex-row items-center justify-center'><span className='text-[10px] italic'>BDT</span>  {product.price}</p>
                 <div className=' flex flex-col gap-2  items-end'>
                 
-                    <Link className='cursor-pointer bg-slate-300 p-1 px-4 rounded-lg' href={`/products/update/${product._id}`}>Update</Link>
+                    <Link className='cursor-pointer bg-slate-300 p-1 px-4 rounded-lg' href={`/admin/products/${product.slug}`}>Update</Link>
                     <DeletedProduct id={product._id} />
 
                 </div>
