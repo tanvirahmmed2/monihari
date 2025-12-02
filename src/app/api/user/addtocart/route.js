@@ -99,3 +99,56 @@ export async function POST(req) {
     }
 
 }
+
+export async function DELETE(req) {
+    try {
+        await ConnectDB()
+
+        const { productId } = await req.json()
+        if (!productId) {
+            return NextResponse.json({
+                success: false,
+                message: "Product id not recieved"
+            }, { status: 400 })
+        }
+
+        const token = (await cookies()).get('user_token')?.value
+
+        const decode = jwt.verify(token, process.env.JWT_SECRET)
+
+        const user = await User.findById(decode.id)
+
+        if (!user) {
+            return NextResponse.json({
+                success: false,
+                message: "Please log in"
+            }, { status: 400 })
+        }
+
+        const isExistProduct = user.cart.find((item) => item.productId === productId)
+
+        if (!isExistProduct) {
+            return NextResponse.json({
+                success: false,
+                message: "Product not found in cart"
+            }, { status: 400 })
+        }
+
+        user.cart = user.cart.filter((item) => item.productId !== productId)
+
+        await user.save()
+
+        return NextResponse.json({
+            success: true,
+            message: "Successfully removed from cart"
+        }, { status: 200 })
+
+    } catch (error) {
+        return NextResponse.json({
+            success: false,
+            message: "Failed to remove data",
+            error: error
+        }, { status: 500 })
+    }
+
+}

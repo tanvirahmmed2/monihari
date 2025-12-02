@@ -1,11 +1,23 @@
 'use client'
+import axios from 'axios';
 import React from 'react'
 import { MdDeleteOutline } from "react-icons/md";
 
-const RemoveFromCart = ({productId}) => {
-  return (
-    <MdDeleteOutline onClick={()=>{alert(productId)}}  className='text-2xl cursor-pointer'/>
-  )
+const RemoveFromCart = ({ productId }) => {
+
+    const removeCartData = async () => {
+        try {
+            const response = await axios.delete('/api/user/addtocart', {data:{productId}, withCredentials:true})
+            console.log(response)
+        } catch (error) {
+            alert(error?.response?.data?.message)
+            console.log(user)
+        }
+    }
+
+    return (
+        <MdDeleteOutline onClick={removeCartData} className='text-2xl cursor-pointer' />
+    )
 }
 
 export default RemoveFromCart
