@@ -1,5 +1,6 @@
 'use client'
 
+import RemoveFromCart from "@/components/Button/RemoveFromCart"
 import axios from "axios"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -40,7 +41,7 @@ const Saved = () => {
                 <p className="w-full">{product.title}</p>
                 <p>{product.quantity}</p>
                 <p>{product.price}</p>
-                <p>Delete</p>
+                <RemoveFromCart productId={product.productId}/>
               </div>
             ))
           }
