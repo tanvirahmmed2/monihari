@@ -9,6 +9,7 @@ const RemoveFromCart = ({ productId }) => {
         try {
             const response = await axios.delete('/api/user/addtocart', {data:{productId}, withCredentials:true})
             console.log(response)
+            alert(response.data.message)
         } catch (error) {
             alert(error?.response?.data?.message)
             console.log(user)
