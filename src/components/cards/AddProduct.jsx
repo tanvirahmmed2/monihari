@@ -39,6 +39,7 @@ const AddProduct = () => {
             formData.append("category", data.category);
             formData.append("description", data.description);
             formData.append("price", data.price);
+            formData.append("discount", data.discount);
             formData.append("wholeSalePrice", data.wholeSalePrice);
             formData.append("quantity", data.quantity);
 
@@ -111,7 +112,7 @@ const AddProduct = () => {
             </div>
             <div className='w-full flex flex-col gap-2'>
                 <label htmlFor="discount">Discount</label>
-                <input type="number" id='discount' name='discount' min={0} required value={data.wholeSalePrice} onChange={handleChange} className='px-2 p-1 border-2 rounded-lg outline-none border-black/15' />
+                <input type="number" id='discount' name='discount' min={0} required value={data.discount} onChange={handleChange} className='px-2 p-1 border-2 rounded-lg outline-none border-black/15' />
             </div>
             <div className='w-full flex flex-col gap-2'>
                 <label htmlFor="quantity">Quantity</label>

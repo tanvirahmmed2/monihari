@@ -74,7 +74,7 @@ const Product = () => {
             </div> : <p>Unavailable</p>}
             <p className=' text-xs text-red-300'>Discount: {data.discount}</p>
             <div className='flex flex-row gap-1 w-full items-center justify-between'>
-              <p>Price: BDT <span className='text[10px] line-through'>{data.oldPrice}</span> {data.price}</p>
+              <p>Price: BDT <span className='text-[10px] line-through'>{data.oldPrice}</span> {data.price}</p>
               <span>Weight: {data.unit}</span>
             </div>
             <span className='w-full flex flex-row items-center justify-between'>
