@@ -17,8 +17,8 @@ const ProductCard = ({ _id, title, slug, price, image, unit }) => {
         height={200}
         className="w-full h-[250px] object-cover rounded-lg"
       />
-      <div className='w-full group-hover:flex flex-col items-center justify-center gap-2 absolute bottom-0 p-2 bg-white hidden '>
-        <p className=" text-sm">BDT {price}</p>
+      <div className='w-full flex flex-col items-center justify-center gap-2 absolute bottom-0 p-2 bg-white '>
+        <p className=" text-sm hidden group-hover:block">BDT {price}</p>
         <h1 className="font-semibold text-sm">{title}</h1>
       </div>
     </Link>
