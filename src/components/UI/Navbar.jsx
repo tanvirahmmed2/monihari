@@ -28,6 +28,7 @@ const Navbar = async () => {
           </div>
           <Link href="/saved">Saved</Link>
           <Link href="/cart">Cart</Link>
+          <Link href="/contact">Contact</Link>
           {
             token ? <div className='flex flex-row items-center justify-center gap-4'>
               <Link href={'/profile'}>Profile</Link>
