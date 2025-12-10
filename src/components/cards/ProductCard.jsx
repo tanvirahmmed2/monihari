@@ -8,7 +8,7 @@ const ProductCard = ({ _id, title, slug, price, image, unit }) => {
   return (
     <Link
       href={`/products/${slug}`}
-      className="w-full rounded-lg flex flex-col items-center justify-between p-1 border-2 border-black/10 gap-2 relative group"
+      className="w-full rounded-lg flex flex-col items-center justify-between p-1 bg-white shadow-sm gap-2 relative group"
     >
       <Image
         src={imgSrc}
