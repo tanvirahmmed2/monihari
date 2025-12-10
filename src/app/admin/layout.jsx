@@ -1,8 +1,7 @@
 import AdminNav from '@/components/UI/AdminNav'
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import React from 'react'
-import jwt from 'jsonwebtoken'
+import { isAdmin } from '@/middleware/isAdmin'
 
 export const metadata = {
   title: 'Admin',
@@ -10,16 +9,10 @@ export const metadata = {
 }
 
 const AdminLayout = async({ children }) => {
-  const token = ( await cookies()).get('user_token')?.value
+  
+  const auth= await isAdmin()
 
-  if(!token){
-    redirect('/login')
-  }
-
-  const user= jwt.verify(token, process.env.JWT_SECRET)
-
-  if(user.role !== "admin"){
-    console.log("only admin can enter")
+  if(!auth.success){
     redirect('/')
   }
 

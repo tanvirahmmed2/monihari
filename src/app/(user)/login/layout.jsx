@@ -1,5 +1,6 @@
-import { cookies } from "next/headers";
+import { isLogin } from "@/middleware/isLogin";
 import { redirect } from "next/navigation";
+
 
 export const metadata = {
   title: "Login",
@@ -9,11 +10,11 @@ export const metadata = {
 
 const RootLayout = async({children}) => {
 
-  const token =  (await cookies()).get('user_token')?.value
-  
-      if(token){
-          redirect('/profile')
-      }
+  const auth= await isLogin()
+
+  if(auth.success){
+    redirect('/profile')
+  }
   
   return (
     <>
