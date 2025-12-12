@@ -1,5 +1,6 @@
 import cloudinary from "@/lib/cloudinary";
 import { ConnectDB } from "@/lib/mongoose";
+import { isAdmin } from "@/middleware/isAdmin";
 import Product from "@/models/product";
 import { NextResponse } from "next/server";
 import slugify from "slugify";
@@ -7,6 +8,14 @@ import slugify from "slugify";
 export async function POST(req) {
   try {
     await ConnectDB();
+    const auth = await isAdmin()
+    if (!auth.success) {
+      return NextResponse.json({
+        success: false,
+        message: 'Only admin can access'
+      }, { status: 400 })
+
+    }
 
     const formData = await req.formData();
 
@@ -54,7 +63,7 @@ export async function POST(req) {
       );
     }
 
-    const newPrice= price - discount
+    const newPrice = price - discount
 
 
 
@@ -182,7 +191,7 @@ export async function PATCH(req) {
   try {
     await ConnectDB();
 
-    const {_id, title, category, description,  quantity,unit, discount, oldPrice }= await req.json()
+    const { _id, title, category, description, quantity, unit, discount, oldPrice } = await req.json()
     if (!title || !category || !description || !oldPrice || !quantity || !unit) {
       return NextResponse.json(
         {
@@ -206,17 +215,17 @@ export async function PATCH(req) {
         { status: 400 }
       );
     }
-    const newPrice= oldPrice - discount
+    const newPrice = oldPrice - discount
 
-    product.title= title
-    product.category= category
-    product.description= description
-    product.slug= slug
-    product.discount= discount
-    product.oldPrice= price
-    product.price= newPrice
-    product.quantity= quantity
-    product.unit= unit
+    product.title = title
+    product.category = category
+    product.description = description
+    product.slug = slug
+    product.discount = discount
+    product.oldPrice = price
+    product.price = newPrice
+    product.quantity = quantity
+    product.unit = unit
 
 
     await product.save()
