@@ -11,7 +11,7 @@ import {
 import { motion } from 'framer-motion'
 
 const SettingsPage = () => {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [data, setData] = useState({
     name: '',
@@ -38,22 +38,6 @@ const SettingsPage = () => {
     tenant_status: ''
   })
 
-  useEffect(() => {
-    fetchSettings()
-  }, [])
-
-  const fetchSettings = async () => {
-    try {
-      const response = await axios.get('/api/website', { withCredentials: true })
-      if (response.data.success) {
-        setData(response.data.payload)
-      }
-    } catch (error) {
-      toast.error('Failed to load settings')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -67,12 +51,9 @@ const SettingsPage = () => {
     e.preventDefault()
     setSaving(true)
     try {
-      const response = await axios.put('/api/website', data, { withCredentials: true })
-      if (response.data.success) {
-        toast.success('Settings updated successfully')
-      }
+      toast.success('Settings functionality has been disabled')
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to update settings')
+      toast.error('Failed to update settings')
     } finally {
       setSaving(false)
     }

@@ -13,7 +13,6 @@ const UpdateProductForm = ({ product }) => {
         productId: product?.product_id,
         name: product?.name || '',
         category_id: product?.category_id || '',
-        sub_category_id: product?.sub_category_id || '',
         brand_id: product?.brand_id || '',
         barcode: product?.barcode || '',
         unit: product?.unit || '',

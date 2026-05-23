@@ -13,11 +13,11 @@ const { searchParams } = new URL(req.url);
         const offset = (page - 1) * limit;
 
         let params = [];
-        let where  = ``;
+        let where  = `WHERE 1=1`;
 
         if (category_id && category_id !== '') {
             params.push(category_id);
-            where += ` AND category_id = $${params.length}`;
+            where += ` AND category_id IN (SELECT category_id FROM categories WHERE category_id = $${params.length} OR parent_id = $${params.length})`;
         }
 
         if (minPrice !== null) {

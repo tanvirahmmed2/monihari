@@ -1,4 +1,4 @@
-import { Brevo } from "@getbrevo/brevo";
+import { BrevoClient } from "@getbrevo/brevo";
 import { BREVO_API_KEY, BREVO_SENDER_EMAIL, BREVO_SENDER_NAME } from "./secret";
 
 /**
@@ -7,7 +7,7 @@ import { BREVO_API_KEY, BREVO_SENDER_EMAIL, BREVO_SENDER_NAME } from "./secret";
  */
 export const sendEmail = async ({ toEmail, toName, subject, htmlContent }) => {
     try {
-        const apiInstance = new Brevo.TransactionalEmailsApi({
+        const client = new BrevoClient({
             apiKey: BREVO_API_KEY
         });
 
@@ -21,7 +21,7 @@ export const sendEmail = async ({ toEmail, toName, subject, htmlContent }) => {
             to: [{ email: toEmail, name: toName }]
         };
 
-        const data = await apiInstance.sendTransacEmail(smtpEmail);
+        const data = await client.transactionalEmails.sendTransacEmail(smtpEmail);
         return { success: true, data };
     } catch (error) {
         console.error("Brevo Email Error:", error);

@@ -73,15 +73,15 @@ export async function POST(req) {
 
             const query = `
                 INSERT INTO products (
-                    name, description, category_id, sub_category_id, brand_id, slug, barcode, unit, 
+                    name, description, category_id, brand_id, slug, barcode, unit, 
                     stock, purchase_price, sale_price, discount_price, 
                     wholesale_price, retail_price, dealer_price, image, image_id
                 ) 
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
                 RETURNING product_id`;
 
             const values = [
-                name, description, category_id, sub_category_id, brand_id, slug, barcode, unit,
+                name, description, category_id, brand_id, slug, barcode, unit,
                 computedStock, purchase_price, sale_price, discount_price,
                 wholesale_price, retail_price, dealer_price, 
                 cloudImage.secure_url, cloudImage.public_id
@@ -286,31 +286,30 @@ export async function PUT(req) {
                 name = COALESCE($1, name), 
                 description = $2, 
                 category_id = $3, 
-                sub_category_id = $4,
-                brand_id = $5, 
-                slug = COALESCE($6, slug), 
-                barcode = $7, 
-                unit = $8, 
-                stock = $9, 
-                purchase_price = $10, 
-                sale_price = $11, 
-                discount_price = $12, 
-                wholesale_price = $13, 
-                retail_price = $14, 
-                dealer_price = $15
+                brand_id = $4, 
+                slug = COALESCE($5, slug), 
+                barcode = $6, 
+                unit = $7, 
+                stock = $8, 
+                purchase_price = $9, 
+                sale_price = $10, 
+                discount_price = $11, 
+                wholesale_price = $12, 
+                retail_price = $13, 
+                dealer_price = $14
         `;
 
         const values = [
-            name, description, category_id, sub_category_id, brand_id, slug, barcode, unit,
+            name, description, category_id, brand_id, slug, barcode, unit,
             computedStock, purchase_price, sale_price, discount_price,
             wholesale_price, retail_price, dealer_price
         ];
 
         if (imageUrl) {
-            query += `, image = $16, image_id = $17 WHERE product_id = $18`;
+            query += `, image = $15, image_id = $16 WHERE product_id = $17`;
             values.push(imageUrl, imagePublicId, id);
         } else {
-            query += ` WHERE product_id = $16`;
+            query += ` WHERE product_id = $15`;
             values.push(id);
         }
 

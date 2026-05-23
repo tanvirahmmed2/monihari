@@ -14,7 +14,7 @@ const { name, email, subject, message } = await req.json()
         }
 
         const newSupport = await pool.query(
-            `INSERT INTO supports (name, email, subject, message) VALUES ($1, $2, $3, $4, $5) RETURNING *`, 
+            `INSERT INTO supports (name, email, subject, message) VALUES ($1, $2, $3, $4) RETURNING *`, 
             [name, email, subject, message]
         );
 
