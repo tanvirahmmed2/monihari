@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
     try {
 const data = await pool.query(
-            `SELECT * FROM ecom_categories  ORDER BY created_at DESC`,
+            `SELECT * FROM categories  ORDER BY created_at DESC`,
             []
         );
 

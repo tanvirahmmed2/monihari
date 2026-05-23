@@ -8,8 +8,8 @@ export async function GET() {
              COUNT(p.purchase_id) AS total_purchases,
              COALESCE(SUM(p.total_amount), 0) AS total_amount_spent,
              MAX(p.created_at) AS last_purchase_date
-      FROM ecom_suppliers s
-      LEFT JOIN ecom_purchases p ON s.phone = p.supplier_phone
+      FROM suppliers s
+      LEFT JOIN purchases p ON s.phone = p.supplier_phone
       GROUP BY s.supplier_id, s.name, s.phone, s.email, s.address
       ORDER BY total_amount_spent DESC`;
     const data = await pool.query(query);
@@ -24,10 +24,10 @@ export async function POST(req) {
     const { name, phone, email, address } = await req.json();
     if (!name || !phone) return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
     
-    const check = await pool.query("SELECT supplier_id FROM ecom_suppliers WHERE phone = $1", [phone]);
+    const check = await pool.query("SELECT supplier_id FROM suppliers WHERE phone = $1", [phone]);
     if (check.rows.length > 0) return NextResponse.json({ success: false, message: "Phone number already exists" }, { status: 400 });
     
-    const query = "INSERT INTO ecom_suppliers (name, phone, email, address) VALUES ($1, $2, $3, $4) RETURNING *";
+    const query = "INSERT INTO suppliers (name, phone, email, address) VALUES ($1, $2, $3, $4) RETURNING *";
     const res = await pool.query(query, [name, phone, email || null, address || null]);
     return NextResponse.json({ success: true, message: "Supplier added", payload: res.rows[0] }, { status: 201 });
   } catch (error) {
@@ -41,7 +41,7 @@ export async function DELETE(req) {
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ success: false, message: "ID is required" }, { status: 400 });
     
-    const res = await pool.query("DELETE FROM ecom_suppliers WHERE supplier_id = $1 RETURNING *", [id]);
+    const res = await pool.query("DELETE FROM suppliers WHERE supplier_id = $1 RETURNING *", [id]);
     if (res.rowCount === 0) return NextResponse.json({ success: false, message: "Supplier not found" }, { status: 404 });
     return NextResponse.json({ success: true, message: "Supplier deleted successfully" }, { status: 200 });
   } catch (error) {

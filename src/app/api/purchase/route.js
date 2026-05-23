@@ -25,14 +25,14 @@ const body = await req.json();
         await client.query('BEGIN');
 
         // 1. Get Supplier Info
-        const supplierRes = await client.query("SELECT name, phone FROM ecom_suppliers WHERE supplier_id = $1", [supplier_id]);
+        const supplierRes = await client.query("SELECT name, phone FROM suppliers WHERE supplier_id = $1", [supplier_id]);
         if (supplierRes.rows.length === 0) throw new Error("Supplier not found");
         
         const { name: s_name, phone: s_phone } = supplierRes.rows[0];
 
         // 2. Insert Purchase Header
         const purchaseQuery = `
-            INSERT INTO ecom_purchases (
+            INSERT INTO purchases (
                 supplier_id, supplier_name, supplier_phone, invoice_no, subtotal_amount, 
                 extra_discount, total_amount, payment_method, transaction_id, note
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING purchase_id`;
@@ -46,19 +46,19 @@ const body = await req.json();
 
         // 3. Insert Payment
         await client.query(
-            "INSERT INTO ecom_purchase_payments (purchase_id, payment_method, amount_paid, transaction_id) VALUES ($1, $2, $3, $4, $5)",
+            "INSERT INTO purchase_payments (purchase_id, payment_method, amount_paid, transaction_id) VALUES ($1, $2, $3, $4, $5)",
             [purchaseId, payment_method, Number(total_amount), transaction_id]
         );
 
         // 4. Loop Items: Insert & Update Stock
         for (const item of items) {
             await client.query(
-                "INSERT INTO ecom_purchase_items (purchase_id, product_id, quantity, purchase_price) VALUES ($1, $2, $3, $4, $5)",
+                "INSERT INTO purchase_items (purchase_id, product_id, quantity, purchase_price) VALUES ($1, $2, $3, $4, $5)",
                 [purchaseId, item.product_id, item.quantity, Number(item.purchase_price)]
             );
 
             await client.query(
-                "UPDATE ecom_products SET stock = stock + $1, purchase_price = $2 WHERE product_id = $3",
+                "UPDATE products SET stock = stock + $1, purchase_price = $2 WHERE product_id = $3",
                 [item.quantity, Number(item.purchase_price), item.product_id]
             );
         }
@@ -94,11 +94,11 @@ const { searchParams } = new URL(req.url);
                         'quantity', pi.quantity,
                         'purchase_price', pi.purchase_price
                     ))
-                    FROM ecom_purchase_items pi
-                    JOIN ecom_products pr ON pi.product_id = pr.product_id
+                    FROM purchase_items pi
+                    JOIN products pr ON pi.product_id = pr.product_id
                     WHERE pi.purchase_id = p.purchase_id
                 ), '[]') as items
-            FROM ecom_purchases p
+            FROM purchases p
             WHERE 
                 (
                 p.supplier_name ILIKE $1 
@@ -106,8 +106,8 @@ const { searchParams } = new URL(req.url);
                 OR p.invoice_no ILIKE $1
                 OR p.created_at::text ILIKE $1
                 OR EXISTS (
-                    SELECT 1 FROM ecom_purchase_items pi
-                    JOIN ecom_products pr ON pi.product_id = pr.product_id
+                    SELECT 1 FROM purchase_items pi
+                    JOIN products pr ON pi.product_id = pr.product_id
                     WHERE pi.purchase_id = p.purchase_id
                     AND (pr.name ILIKE $1 OR pr.barcode ILIKE $1)
                 ))
@@ -129,17 +129,17 @@ const { id } = await req.json();
         await client.query('BEGIN');
 
         // 1. Get items to revert stock
-        const itemsRes = await client.query("SELECT product_id, quantity FROM ecom_purchase_items WHERE purchase_id = $1", [id]);
+        const itemsRes = await client.query("SELECT product_id, quantity FROM purchase_items WHERE purchase_id = $1", [id]);
 
         // 2. Revert Stock
         for (const item of itemsRes.rows) {
             await client.query(
-                "UPDATE ecom_products SET stock = stock - $1 WHERE product_id = $2",
+                "UPDATE products SET stock = stock - $1 WHERE product_id = $2",
                 [item.quantity, item.product_id]
             );
         }
 
-        const del = await client.query("DELETE FROM ecom_purchases WHERE purchase_id = $1 RETURNING *", [id]);
+        const del = await client.query("DELETE FROM purchases WHERE purchase_id = $1 RETURNING *", [id]);
         
         if (del.rowCount === 0) throw new Error("Purchase not found");
 

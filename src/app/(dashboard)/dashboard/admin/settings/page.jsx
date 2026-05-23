@@ -135,8 +135,8 @@ const SettingsPage = () => {
           </div>
         </div>
         <div className="bg-slate-50 px-8 py-3 flex items-center justify-between border-t border-slate-100">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">For billing inquiries or plan upgrades, please visit disibin.com</p>
-          <a href="https://www.disibin.com" target="_blank" className="text-xs font-black text-sky-500 uppercase tracking-widest hover:text-sky-600 transition-colors">Contact Support</a>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">For billing inquiries or plan upgrades, please visit razers.com</p>
+          <a href="https://www.razers.com" target="_blank" className="text-xs font-black text-sky-500 uppercase tracking-widest hover:text-sky-600 transition-colors">Contact Support</a>
         </div>
       </motion.div>
 

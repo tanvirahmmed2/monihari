@@ -14,7 +14,7 @@ const { name, email, subject, message } = await req.json()
         }
 
         const newSupport = await pool.query(
-            `INSERT INTO ecom_supports (name, email, subject, message) VALUES ($1, $2, $3, $4, $5) RETURNING *`, 
+            `INSERT INTO supports (name, email, subject, message) VALUES ($1, $2, $3, $4, $5) RETURNING *`, 
             [name, email, subject, message]
         );
 
@@ -35,7 +35,7 @@ const { name, email, subject, message } = await req.json()
 
 export async function GET() {
     try {
-const data = await pool.query(`SELECT * FROM ecom_supports  ORDER BY created_at DESC`, [])
+const data = await pool.query(`SELECT * FROM supports  ORDER BY created_at DESC`, [])
         const result = data.rows
 
         return NextResponse.json({
@@ -91,7 +91,7 @@ const { id } = await req.json()
                 success: false, message: 'ID not received'
             }, { status: 400 })
         }
-        const result = await pool.query(`DELETE FROM ecom_supports WHERE support_id = $1 RETURNING *`, [id])
+        const result = await pool.query(`DELETE FROM supports WHERE support_id = $1 RETURNING *`, [id])
         if (result.rowCount === 0) {
             return NextResponse.json({
                 success: false, message: 'Failed to remove message'

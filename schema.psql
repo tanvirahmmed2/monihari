@@ -1,116 +1,5 @@
-never change schema
--- =====================================================
--- TENANTS
--- =====================================================
-CREATE TABLE tenants (
-  tenant_id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
 
-  owner_id INT REFERENCES users(user_id),
-
-  domain TEXT UNIQUE,
-  subdomain TEXT UNIQUE,
-
-  status TEXT DEFAULT 'active'
-    CHECK (status IN ('active','suspended','expired')),
-
-  expires_at TIMESTAMP,
-  created_at TIMESTAMP DEFAULT now(),
-  updated_at TIMESTAMP DEFAULT now()
-);
-
-CREATE TABLE tenant_users (
-  id SERIAL PRIMARY KEY,
-  tenant_id INT REFERENCES tenants(tenant_id),
-  user_id INT REFERENCES users(user_id),
-
-  role TEXT DEFAULT 'member'
-    CHECK (role IN ('owner','admin','member')),
-
-  created_at TIMESTAMP DEFAULT now(),
-  UNIQUE(tenant_id, user_id)
-);
-
--- =====================================================
--- WEBSITES
--- =====================================================
-CREATE TABLE public.websites (
-  website_id SERIAL PRIMARY KEY,
-
-  tenant_id INTEGER REFERENCES tenants(tenant_id),
-
-  name TEXT,
-  domain TEXT UNIQUE,
-  theme TEXT,
-
-  status TEXT DEFAULT 'development'
-    CHECK (status IN ('active','development','maintenance','suspended')),
-
-  created_at TIMESTAMP DEFAULT now(),
-  updated_at TIMESTAMP DEFAULT now(),
-
-  -- Business Info
-  business_name TEXT,
-  logo TEXT,
-  favicon TEXT,
-
-  -- Contact
-  email TEXT,
-  phone TEXT,
-  address TEXT,
-  city TEXT,
-  country TEXT,
-
-  -- SEO
-  meta_title TEXT,
-  meta_description TEXT,
-
-
-  -- Social
-  facebook TEXT,
-  instagram TEXT,
-  linkedin TEXT,
-  youtube TEXT,
-
-  -- UI
-  primary_color TEXT DEFAULT '#10b981',
-  secondary_color TEXT DEFAULT '#ffffff',
-
-  -- Flags
-  is_public BOOLEAN DEFAULT TRUE,
-  is_store_enabled BOOLEAN DEFAULT TRUE
-);
-
-
--- =====================================================
-CREATE TABLE subscriptions (
-  subscription_id SERIAL PRIMARY KEY,
-  user_id INT REFERENCES users(user_id),
-  package_id INT REFERENCES packages(package_id),
-  tenant_id INT,
-
-  purchase_id INT REFERENCES purchases(purchase_id),
-
-  stripe_subscription_id TEXT UNIQUE,
-
-  status TEXT DEFAULT 'active'
-    CHECK (status IN ('active','past_due','canceled','unpaid','trialing','expired','refunded','pending')),
-
-  current_period_start TIMESTAMP DEFAULT now(),
-  current_period_end TIMESTAMP,
-
-  cancel_at_period_end BOOLEAN DEFAULT FALSE,
-  is_lifetime BOOLEAN DEFAULT FALSE,
-
-  created_at TIMESTAMP DEFAULT now(),
-  updated_at TIMESTAMP DEFAULT now()
-);
-
-
--- =====================================================
--- USERS (STAFF / ADMIN)
--- =====================================================
-CREATE TABLE ecom_users (
+CREATE TABLE users (
   user_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
@@ -132,7 +21,7 @@ CREATE TABLE ecom_users (
 -- =====================================================
 -- CUSTOMERS
 -- =====================================================
-CREATE TABLE ecom_customers (
+CREATE TABLE customers (
   customer_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
@@ -147,10 +36,10 @@ CREATE TABLE ecom_customers (
 -- =====================================================
 -- CATEGORIES
 -- =====================================================
-CREATE TABLE ecom_categories (
+CREATE TABLE categories (
   category_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
-parent_id INT REFERENCES ecom_categories(category_id) ON DELETE CASCADE;
+  parent_id INT REFERENCES categories(category_id) ON DELETE CASCADE,
   name VARCHAR(100) NOT NULL,
 
   created_at TIMESTAMP DEFAULT now()
@@ -159,7 +48,7 @@ parent_id INT REFERENCES ecom_categories(category_id) ON DELETE CASCADE;
 -- =====================================================
 -- BRANDS
 -- =====================================================
-CREATE TABLE ecom_brands (
+CREATE TABLE brands (
   brand_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
@@ -173,12 +62,12 @@ CREATE TABLE ecom_brands (
 -- =====================================================
 -- PRODUCTS
 -- =====================================================
-CREATE TABLE ecom_products (
+CREATE TABLE products (
   product_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
-  category_id INT REFERENCES ecom_categories(category_id),
-  brand_id INT REFERENCES ecom_brands(brand_id),
+  category_id INT REFERENCES categories(category_id),
+  brand_id INT REFERENCES brands(brand_id),
 
   name VARCHAR(150) NOT NULL,
   slug VARCHAR(150),
@@ -210,7 +99,7 @@ CREATE TABLE ecom_products (
 -- =====================================================
 -- SUPPLIERS
 -- =====================================================
-CREATE TABLE ecom_suppliers (
+CREATE TABLE suppliers (
   supplier_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
@@ -231,11 +120,11 @@ CREATE TABLE ecom_suppliers (
 -- =====================================================
 -- PURCHASES (STOCK IN)
 -- =====================================================
-CREATE TABLE ecom_purchases (
+CREATE TABLE purchases (
   purchase_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
-  supplier_id INT REFERENCES ecom_suppliers(supplier_id),
+  supplier_id INT REFERENCES suppliers(supplier_id),
 
   supplier_name VARCHAR(200),
   supplier_phone VARCHAR(20),
@@ -257,12 +146,12 @@ CREATE TABLE ecom_purchases (
 -- =====================================================
 -- PURCHASE ITEMS
 -- =====================================================
-CREATE TABLE ecom_purchase_items (
+CREATE TABLE purchase_items (
   id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
-  purchase_id INT REFERENCES ecom_purchases(purchase_id) ON DELETE CASCADE,
-  product_id INT REFERENCES ecom_products(product_id),
+  purchase_id INT REFERENCES purchases(purchase_id) ON DELETE CASCADE,
+  product_id INT REFERENCES products(product_id),
 
   quantity INT NOT NULL,
   purchase_price NUMERIC(10,2) NOT NULL
@@ -271,11 +160,11 @@ CREATE TABLE ecom_purchase_items (
 -- =====================================================
 -- PURCHASE PAYMENTS
 -- =====================================================
-CREATE TABLE ecom_purchase_payments (
+CREATE TABLE purchase_payments (
   payment_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
-  purchase_id INT REFERENCES ecom_purchases(purchase_id),
+  purchase_id INT REFERENCES purchases(purchase_id),
 
   payment_method VARCHAR(50),
   amount_paid NUMERIC(10,2),
@@ -288,10 +177,10 @@ CREATE TABLE ecom_purchase_payments (
 -- =====================================================
 -- ORDERS (SALES)
 -- =====================================================
-CREATE TABLE public.ecom_orders (
+CREATE TABLE public.orders (
     order_id            SERIAL PRIMARY KEY,
     tenant_id           INTEGER NOT NULL REFERENCES public.tenants(tenant_id),
-    customer_id         INTEGER REFERENCES public.ecom_customers(customer_id),
+    customer_id         INTEGER REFERENCES public.customers(customer_id),
 
     phone               VARCHAR(20) NOT NULL,
     
@@ -325,28 +214,28 @@ CREATE TABLE public.ecom_orders (
 );
 
 -- Index for fast tenant-based dashboard lookups
-CREATE INDEX idx_ecom_orders_tenant_status ON public.ecom_orders(tenant_id, status);
+CREATE INDEX idx_orders_tenant_status ON public.orders(tenant_id, status);
 
 
 -- =====================================================
 -- ORDER ITEMS
 -- =====================================================
-CREATE TABLE ecom_order_items (
+CREATE TABLE order_items (
   order_item_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
-  order_id INT REFERENCES ecom_orders(order_id) ON DELETE CASCADE,
-  product_id INT REFERENCES ecom_products(product_id),
+  order_id INT REFERENCES orders(order_id) ON DELETE CASCADE,
+  product_id INT REFERENCES products(product_id),
 
   quantity INT NOT NULL,
   price NUMERIC(10,2) NOT NULL
 );
 
 
-CREATE TABLE public.ecom_payments (
+CREATE TABLE public.payments (
     payment_id       SERIAL PRIMARY KEY,
     tenant_id        INTEGER NOT NULL REFERENCES public.tenants(tenant_id),
-    order_id         INTEGER NOT NULL REFERENCES public.ecom_orders(order_id) ON DELETE CASCADE,
+    order_id         INTEGER NOT NULL REFERENCES public.orders(order_id) ON DELETE CASCADE,
 
     -- Transaction Details
     payment_method   VARCHAR(50),  -- 'bkash', 'nagad', 'cash', 'card', 'bank_transfer'
@@ -374,12 +263,12 @@ CREATE TABLE public.ecom_payments (
 );
 
 -- Index for high-speed balance calculations
-CREATE INDEX idx_ecom_payments_order_id ON public.ecom_payments(order_id);
-CREATE INDEX idx_ecom_payments_tenant_method ON public.ecom_payments(tenant_id, payment_method);
+CREATE INDEX idx_payments_order_id ON public.payments(order_id);
+CREATE INDEX idx_payments_tenant_method ON public.payments(tenant_id, payment_method);
 -- =====================================================
 -- SUPPORT
 -- =====================================================
-CREATE TABLE ecom_supports (
+CREATE TABLE supports (
   support_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
@@ -391,11 +280,11 @@ CREATE TABLE ecom_supports (
   created_at TIMESTAMP DEFAULT now()
 );
 
-CREATE TABLE ecom_inventory_logs (
+CREATE TABLE inventory_logs (
   log_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
-  product_id INT REFERENCES ecom_products(product_id),
+  product_id INT REFERENCES products(product_id),
 
   type TEXT CHECK (type IN ('purchase','sale','adjustment','return')),
   quantity INT NOT NULL,
@@ -407,11 +296,11 @@ CREATE TABLE ecom_inventory_logs (
 );
 
 
-CREATE TABLE ecom_refunds (
+CREATE TABLE refunds (
   refund_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
-  order_id INT REFERENCES ecom_orders(order_id),
+  order_id INT REFERENCES orders(order_id),
 
   amount NUMERIC(10,2),
   reason TEXT,
@@ -423,11 +312,11 @@ CREATE TABLE ecom_refunds (
 );
 
 
-CREATE TABLE ecom_reviews (
+CREATE TABLE reviews (
   review_id SERIAL PRIMARY KEY,
 
   tenant_id INT REFERENCES tenants(tenant_id) ON DELETE CASCADE,
-  user_id INT REFERENCES ecom_users(user_id) ON DELETE SET NULL,
+  user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
 
   rating INT NOT NULL
     CHECK (rating BETWEEN 1 AND 5),

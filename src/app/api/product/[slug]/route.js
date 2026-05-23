@@ -6,9 +6,9 @@ export async function GET(req, { params }) {
         const { slug } = await params;
 const productRes = await pool.query(`
             SELECT p.*, c.category_id, c.name as category_name, b.name as brand_name 
-            FROM ecom_products p
-            LEFT JOIN ecom_categories c ON p.category_id = c.category_id
-            LEFT JOIN ecom_brands b ON p.brand_id = b.brand_id
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.category_id
+            LEFT JOIN brands b ON p.brand_id = b.brand_id
             WHERE p.slug = $1
         `, [slug]);
 

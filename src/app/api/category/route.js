@@ -15,7 +15,7 @@ export async function POST(req) {
     const parentId = parent_id ? parseInt(parent_id) : null;
 
     const existCat = await pool.query(
-      'SELECT 1 FROM ecom_categories WHERE name = $1 AND (parent_id = $2 OR (parent_id IS NULL AND $2 IS NULL))',
+      'SELECT 1 FROM categories WHERE name = $1 AND (parent_id = $2 OR (parent_id IS NULL AND $2 IS NULL))',
       [name.trim(), parentId]
     )
 
@@ -27,7 +27,7 @@ export async function POST(req) {
     }
 
     const newCat = await pool.query(
-      'INSERT INTO ecom_categories(name, parent_id) VALUES($1, $2) RETURNING *',
+      'INSERT INTO categories(name, parent_id) VALUES($1, $2) RETURNING *',
       [name.trim(), parentId]
     )
 
@@ -50,7 +50,7 @@ export async function POST(req) {
 export async function GET() {
     try {
         const data = await pool.query(
-            'SELECT * FROM ecom_categories ORDER BY created_at DESC'
+            'SELECT * FROM categories ORDER BY created_at DESC'
         )
         const result = data.rows
 
@@ -85,7 +85,7 @@ export async function PUT(req) {
     const parentId = parent_id ? parseInt(parent_id) : null;
 
     const result = await pool.query(
-      'UPDATE ecom_categories SET name = $1, parent_id = $2 WHERE category_id = $3 RETURNING *',
+      'UPDATE categories SET name = $1, parent_id = $2 WHERE category_id = $3 RETURNING *',
       [name.trim(), parentId, id]
     );
 
@@ -117,7 +117,7 @@ export async function DELETE(req) {
             }, { status: 400 })
         }
         const result = await pool.query(
-            `DELETE FROM ecom_categories WHERE category_id = $1 RETURNING *`, 
+            `DELETE FROM categories WHERE category_id = $1 RETURNING *`, 
             [id]
         )
 

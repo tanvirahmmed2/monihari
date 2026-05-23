@@ -7,7 +7,7 @@ export async function GET() {
     const client = await pool.connect();
     try {
 const result = await client.query(`
-            SELECT * FROM ecom_customers 
+            SELECT * FROM customers 
             
             ORDER BY created_at DESC
         `, []);
@@ -45,7 +45,7 @@ const body = await req.json();
 
         // 2. Check if phone already exists (unique constraint check)
         const checkExist = await client.query(
-            "SELECT customer_id FROM ecom_customers WHERE phone = $1", 
+            "SELECT customer_id FROM customers WHERE phone = $1", 
             [phone]
         );
 
@@ -58,7 +58,7 @@ const body = await req.json();
 
         // 3. Insert into Database
         const query = `
-            INSERT INTO ecom_customers (name, phone, email, address) 
+            INSERT INTO customers (name, phone, email, address) 
             VALUES ($1, $2, $3, $4, $5) 
             RETURNING *
         `;

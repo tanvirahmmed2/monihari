@@ -15,7 +15,7 @@ export async function GET() {
 
         // 2. Fetch Customer ID using the phone from the logged-in user
         const customerRes = await client.query(
-            "SELECT customer_id FROM ecom_customers WHERE phone = $1", 
+            "SELECT customer_id FROM customers WHERE phone = $1", 
             [userPhone]
         );
 
@@ -40,10 +40,10 @@ export async function GET() {
                 pr.name AS product_name,
                 pr.image AS product_image,
                 pr.unit
-            FROM ecom_orders o
-            LEFT JOIN ecom_payments p ON o.order_id = p.order_id
-            LEFT JOIN ecom_order_items oi ON o.order_id = oi.order_id
-            LEFT JOIN ecom_products pr ON oi.product_id = pr.product_id
+            FROM orders o
+            LEFT JOIN payments p ON o.order_id = p.order_id
+            LEFT JOIN order_items oi ON o.order_id = oi.order_id
+            LEFT JOIN products pr ON oi.product_id = pr.product_id
             WHERE o.customer_id = $1
             ORDER BY o.created_at DESC;
         `;

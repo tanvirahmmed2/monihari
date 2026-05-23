@@ -38,13 +38,13 @@ const { searchParams } = new URL(req.url);
         };
         const orderBy = orderMap[sort] || orderMap.latest;
 
-        const countQuery = `SELECT COUNT(*) FROM ecom_products ${where}`;
+        const countQuery = `SELECT COUNT(*) FROM products ${where}`;
         const totalRes   = await pool.query(countQuery, params);
         const totalItems = parseInt(totalRes.rows[0].count);
         const totalPages = Math.ceil(totalItems / limit) || 1;
 
         params.push(limit, offset);
-        const dataQuery = `SELECT * FROM ecom_products ${where} ORDER BY ${orderBy} LIMIT $${params.length - 1} OFFSET $${params.length}`;
+        const dataQuery = `SELECT * FROM products ${where} ORDER BY ${orderBy} LIMIT $${params.length - 1} OFFSET $${params.length}`;
         const data = await pool.query(dataQuery, params);
 
         return NextResponse.json({

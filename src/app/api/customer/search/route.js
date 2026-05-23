@@ -15,8 +15,8 @@ export async function GET(req) {
                 c.phone,
                 COUNT(o.order_id) AS total_orders,
                 COALESCE(SUM(o.total_amount), 0) AS total_purchased_amount
-            FROM ecom_customers c
-            LEFT JOIN ecom_orders o ON c.customer_id = o.customer_id
+            FROM customers c
+            LEFT JOIN orders o ON c.customer_id = o.customer_id
             WHERE c.phone ILIKE $1 OR c.name ILIKE $1
             GROUP BY c.customer_id, c.name, c.phone
             ORDER BY total_purchased_amount DESC

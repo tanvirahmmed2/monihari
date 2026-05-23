@@ -13,7 +13,7 @@ const { email, password } = await req.json();
 
         // 1. Validate Input
         const existsUser = await pool.query(
-            `SELECT * FROM ecom_users WHERE email=$1`, 
+            `SELECT * FROM users WHERE email=$1`, 
             [email]
         );
         if (existsUser.rowCount === 0) {

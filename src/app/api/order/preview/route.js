@@ -35,11 +35,11 @@ const { id } = await params;
                         'barcode', pr.barcode
                     )
                 ) AS items
-            FROM ecom_orders o
-            JOIN ecom_customers c    ON o.customer_id = c.customer_id
-            JOIN ecom_payments p     ON o.order_id    = p.order_id
-            JOIN ecom_order_items oi ON o.order_id    = oi.order_id
-            JOIN ecom_products pr    ON oi.product_id = pr.product_id
+            FROM orders o
+            JOIN customers c    ON o.customer_id = c.customer_id
+            JOIN payments p     ON o.order_id    = p.order_id
+            JOIN order_items oi ON o.order_id    = oi.order_id
+            JOIN products pr    ON oi.product_id = pr.product_id
             WHERE o.order_id = $1
             GROUP BY 
                 o.order_id, 

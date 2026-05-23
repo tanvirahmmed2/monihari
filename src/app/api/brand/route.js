@@ -18,7 +18,7 @@ const { name, description } = await req.json();
 
     // 2. Check if exists
     const existBrand = await pool.query(
-      'SELECT 1 FROM ecom_brands WHERE name = $1',
+      'SELECT 1 FROM brands WHERE name = $1',
       [brandName]
     );
 
@@ -31,7 +31,7 @@ const { name, description } = await req.json();
 
     // 3. Insert only NAME and DESCRIPTION (No slug)
     const newBrand = await pool.query(
-      'INSERT INTO ecom_brands(name, description) VALUES($1, $2, $3) RETURNING *',
+      'INSERT INTO brands(name, description) VALUES($1, $2, $3) RETURNING *',
       [brandName, description || null]
     );
 
@@ -55,7 +55,7 @@ const { name, description } = await req.json();
 export async function GET() {
   try {
 const data = await pool.query(
-      'SELECT * FROM ecom_brands  ORDER BY created_at DESC',
+      'SELECT * FROM brands  ORDER BY created_at DESC',
       []
     )
     const result = data.rows
@@ -91,7 +91,7 @@ const { id } = await req.json()
     }
 
     const result = await pool.query(
-      'DELETE FROM ecom_brands WHERE brand_id = $1 RETURNING *',
+      'DELETE FROM brands WHERE brand_id = $1 RETURNING *',
       [id]
     )
 
@@ -126,7 +126,7 @@ const { id, name, description } = await req.json();
     }
 
     const result = await pool.query(
-      'UPDATE ecom_brands SET name = $1, description = $2, updated_at = now() WHERE brand_id = $3 RETURNING *',
+      'UPDATE brands SET name = $1, description = $2, updated_at = now() WHERE brand_id = $3 RETURNING *',
       [name.trim(), description || null, id]
     );
 

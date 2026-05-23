@@ -16,7 +16,7 @@ export async function POST(req) {
         const client = await pool.connect();
         try {
             const query = `
-                INSERT INTO ecom_users (name, email, phone, password, role)
+                INSERT INTO users (name, email, phone, password, role)
                 VALUES ($1, $2, $3, $4, $5)
                 RETURNING user_id, name, email, role;
             `;
@@ -25,7 +25,7 @@ export async function POST(req) {
 
             // SYNC CUSTOMER NAME: If a customer exists with this phone, update their name
             await client.query(
-                "UPDATE ecom_customers SET name = $1 WHERE phone = $2",
+                "UPDATE customers SET name = $1 WHERE phone = $2",
                 [name, phone]
             );
 
@@ -52,7 +52,7 @@ export async function GET(req) {
     try {
         const res = await pool.query(
             `SELECT user_id, name, email, phone, role, is_active, created_at 
-             FROM ecom_users 
+             FROM users 
              ORDER BY created_at DESC`
         );
 
@@ -79,7 +79,7 @@ export async function PUT(req) {
                 const salt = await bcrypt.genSalt(10);
                 const hashedPassword = await bcrypt.hash(password, salt);
                 query = `
-                    UPDATE ecom_users 
+                    UPDATE users 
                     SET name = $1, phone = $2, email = $3, password = $4, role = $5, is_active = $6
                     WHERE user_id = $7
                     RETURNING user_id, name, email, phone, role;
@@ -87,7 +87,7 @@ export async function PUT(req) {
                 values = [name, phone, email, hashedPassword, role, is_active, user_id];
             } else {
                 query = `
-                    UPDATE ecom_users 
+                    UPDATE users 
                     SET name = $1, phone = $2, email = $3, role = $4, is_active = $5
                     WHERE user_id = $6
                     RETURNING user_id, name, email, phone, role;
@@ -114,7 +114,7 @@ export async function DELETE(req) {
     try {
         const { id } = await req.json();
 
-        const result = await pool.query("DELETE FROM ecom_users WHERE user_id = $1", [id]);
+        const result = await pool.query("DELETE FROM users WHERE user_id = $1", [id]);
         
         if (result.rowCount === 0) {
             return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
@@ -135,7 +135,7 @@ export async function PATCH(req) {
         }
 
         const res = await pool.query(
-            `UPDATE ecom_users 
+            `UPDATE users 
              SET role = $1 
              WHERE email = $2 
              RETURNING user_id, name, email, role`, 

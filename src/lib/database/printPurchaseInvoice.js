@@ -108,7 +108,7 @@ export const printPurchaseInvoice = (purchase) => {
 
           <div class="footer">
             <p>This is a computer-generated document. No signature is required.</p>
-            <p>© ${new Date().getFullYear()} Disibin LTD</p>
+            <p>© ${new Date().getFullYear()} Razers LTD</p>
           </div>
         </body>
       </html>

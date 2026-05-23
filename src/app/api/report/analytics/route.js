@@ -11,25 +11,25 @@ const salesStatsQuery = `
                 COALESCE(SUM(CASE WHEN created_at::date = CURRENT_DATE - 1 THEN total_amount ELSE 0 END), 0)::FLOAT as yesterday,
                 COALESCE(SUM(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '7 days' THEN total_amount ELSE 0 END), 0)::FLOAT as last_week,
                 COALESCE(SUM(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '1 year' THEN total_amount ELSE 0 END), 0)::FLOAT as last_year
-            FROM ecom_orders WHERE status IN ('confirmed', 'shipped', 'delivered', 'completed', 'confirm');
+            FROM orders WHERE status IN ('confirmed', 'shipped', 'delivered', 'completed', 'confirm');
         `;
 
         const financeQuery = `
             SELECT 
-                (SELECT COALESCE(SUM(stock * purchase_price), 0)::FLOAT FROM ecom_products ) as stock_valuation,
-                (SELECT COALESCE(SUM(total_amount), 0)::FLOAT FROM ecom_orders WHERE status IN ('confirmed', 'shipped', 'delivered', 'completed', 'confirm')) as total_sales,
-                (SELECT COALESCE(SUM(total_amount), 0)::FLOAT FROM ecom_purchases ) as total_purchases_cost,
-                (SELECT COALESCE(SUM(amount_paid), 0)::FLOAT FROM ecom_purchase_payments ) as cash_outflow
-            FROM ecom_products  LIMIT 1;
+                (SELECT COALESCE(SUM(stock * purchase_price), 0)::FLOAT FROM products ) as stock_valuation,
+                (SELECT COALESCE(SUM(total_amount), 0)::FLOAT FROM orders WHERE status IN ('confirmed', 'shipped', 'delivered', 'completed', 'confirm')) as total_sales,
+                (SELECT COALESCE(SUM(total_amount), 0)::FLOAT FROM purchases ) as total_purchases_cost,
+                (SELECT COALESCE(SUM(amount_paid), 0)::FLOAT FROM purchase_payments ) as cash_outflow
+            FROM products  LIMIT 1;
         `;
 
         const chartQuery = `
             SELECT 
                 to_char(d.day, 'DD Mon') as date,
                 COALESCE(SUM(o.total_amount), 0)::FLOAT as amount,
-                COALESCE((SELECT SUM(total_amount) FROM ecom_purchases WHERE created_at::date = d.day), 0)::FLOAT as purchase_amount
+                COALESCE((SELECT SUM(total_amount) FROM purchases WHERE created_at::date = d.day), 0)::FLOAT as purchase_amount
             FROM generate_series(CURRENT_DATE - INTERVAL '6 days', CURRENT_DATE, '1 day') d(day)
-            LEFT JOIN ecom_orders o ON o.created_at::date = d.day AND o.status IN ('confirmed', 'shipped', 'delivered')
+            LEFT JOIN orders o ON o.created_at::date = d.day AND o.status IN ('confirmed', 'shipped', 'delivered')
             GROUP BY d.day
             ORDER BY d.day ASC;
         `;

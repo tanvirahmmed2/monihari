@@ -30,7 +30,7 @@ export async function POST(req) {
         if (!barcode || barcode.trim() === '') {
             const maxBarcodeResult = await pool.query(`
                 SELECT MAX(CAST(barcode AS BIGINT)) as max_code 
-                FROM ecom_products 
+                FROM products 
                 WHERE barcode ~ '^[0-9]+$'
             `);
             const maxCode = maxBarcodeResult.rows[0]?.max_code;
@@ -46,7 +46,7 @@ export async function POST(req) {
             const slug = slugify(name.trim(), { lower: true, strict: true });
 
             const isExists = await client.query(
-                `SELECT product_id FROM ecom_products WHERE (slug=$1 OR barcode=$2)`, 
+                `SELECT product_id FROM products WHERE (slug=$1 OR barcode=$2)`, 
                 [slug, barcode]
             );
             if (isExists.rowCount > 0) {
@@ -72,7 +72,7 @@ export async function POST(req) {
             });
 
             const query = `
-                INSERT INTO ecom_products (
+                INSERT INTO products (
                     name, description, category_id, sub_category_id, brand_id, slug, barcode, unit, 
                     stock, purchase_price, sale_price, discount_price, 
                     wholesale_price, retail_price, dealer_price, image, image_id
@@ -93,9 +93,9 @@ export async function POST(req) {
             // Fetch the final product to return
             const finalProduct = await client.query(`
                 SELECT p.*, c.name as category_name, b.name as brand_name 
-                FROM ecom_products p
-                LEFT JOIN ecom_categories c ON p.category_id = c.category_id
-                LEFT JOIN ecom_brands b ON p.brand_id = b.brand_id
+                FROM products p
+                LEFT JOIN categories c ON p.category_id = c.category_id
+                LEFT JOIN brands b ON p.brand_id = b.brand_id
                 WHERE p.product_id = $1
             `, [productId]);
 
@@ -129,14 +129,14 @@ export async function GET(req) {
         const limit = 20;
         const offset = (page - 1) * limit;
 
-        const countRes = await pool.query("SELECT COUNT(*) FROM ecom_products");
+        const countRes = await pool.query("SELECT COUNT(*) FROM products");
         const totalItems = parseInt(countRes.rows[0].count);
         const totalPages = Math.ceil(totalItems / limit);
 
         const data = await pool.query(
             `SELECT 
                 p.*
-             FROM ecom_products p 
+             FROM products p 
              ORDER BY p.created_at DESC 
              LIMIT $1 OFFSET $2`,
             [limit, offset]
@@ -182,7 +182,7 @@ export async function DELETE(req) {
             );
         }
 
-        const { rows } = await pool.query(`SELECT * FROM ecom_products WHERE product_id = $1`, [id]);
+        const { rows } = await pool.query(`SELECT * FROM products WHERE product_id = $1`, [id]);
         if (rows.length === 0) {
             return NextResponse.json(
                 { success: false, message: "No product found with this ID" },
@@ -201,7 +201,7 @@ export async function DELETE(req) {
         }
 
         const deleteProduct = await pool.query(
-            `DELETE FROM ecom_products WHERE product_id = $1 RETURNING *`,
+            `DELETE FROM products WHERE product_id = $1 RETURNING *`,
             [id]
         );
 
@@ -281,7 +281,7 @@ export async function PUT(req) {
         }
 
         let query = `
-            UPDATE ecom_products 
+            UPDATE products 
             SET 
                 name = COALESCE($1, name), 
                 description = $2, 
@@ -324,9 +324,9 @@ export async function PUT(req) {
         // Fetch the final product to return
         const finalProduct = await client.query(`
             SELECT p.*, c.name as category_name, b.name as brand_name 
-            FROM ecom_products p
-            LEFT JOIN ecom_categories c ON p.category_id = c.category_id
-            LEFT JOIN ecom_brands b ON p.brand_id = b.brand_id
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.category_id
+            LEFT JOIN brands b ON p.brand_id = b.brand_id
             WHERE p.product_id = $1
         `, [id]);
 

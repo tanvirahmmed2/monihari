@@ -7,17 +7,17 @@ export async function GET() {
         const stockStatsQuery = `
             SELECT 
                 COALESCE(SUM(stock), 0) AS total_remaining_stock,
-                (SELECT COALESCE(SUM(quantity), 0) FROM ecom_order_items) AS total_sold_stock
-            FROM ecom_products;
+                (SELECT COALESCE(SUM(quantity), 0) FROM order_items) AS total_sold_stock
+            FROM products;
         `;
 
         const lowStockQuery = `
-            SELECT name, stock, sale_price FROM ecom_products
+            SELECT name, stock, sale_price FROM products
             ORDER BY stock ASC LIMIT 30;
         `;
 
         const highStockQuery = `
-            SELECT name, stock, sale_price FROM ecom_products
+            SELECT name, stock, sale_price FROM products
             ORDER BY stock DESC LIMIT 50;
         `;
 

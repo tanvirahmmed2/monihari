@@ -9,7 +9,7 @@ const { searchParams } = new URL(req.url);
 
         let query = `
             SELECT *
-            FROM ecom_products
+            FROM products
             
         `;
         const values = [];

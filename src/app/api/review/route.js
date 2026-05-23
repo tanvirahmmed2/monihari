@@ -15,8 +15,8 @@ export async function GET(req) {
             if (!auth.success) return NextResponse.json(auth, { status: 401 });
             query = `
                 SELECT r.*, u.name as user_name 
-                FROM ecom_reviews r
-                LEFT JOIN ecom_users u ON r.user_id = u.user_id
+                FROM reviews r
+                LEFT JOIN users u ON r.user_id = u.user_id
                 WHERE r.is_approved = FALSE
                 ORDER BY r.created_at DESC
             `;
@@ -24,7 +24,7 @@ export async function GET(req) {
             const auth = await isUserLogin();
             if (!auth.success) return NextResponse.json(auth, { status: 401 });
             query = `
-                SELECT * FROM ecom_reviews 
+                SELECT * FROM reviews 
                 WHERE user_id = $1
                 LIMIT 1
             `;
@@ -33,8 +33,8 @@ export async function GET(req) {
             // Default: Fetch approved reviews for homepage
             query = `
                 SELECT r.*, u.name as user_name 
-                FROM ecom_reviews r
-                LEFT JOIN ecom_users u ON r.user_id = u.user_id
+                FROM reviews r
+                LEFT JOIN users u ON r.user_id = u.user_id
                 WHERE r.is_approved = TRUE
                 ORDER BY r.created_at DESC
             `;
@@ -56,7 +56,7 @@ export async function POST(req) {
 
         // Check if user already reviewed
         const check = await pool.query(
-            "SELECT review_id FROM ecom_reviews WHERE user_id = $1",
+            "SELECT review_id FROM reviews WHERE user_id = $1",
             [auth.payload.user_id]
         );
 
@@ -65,7 +65,7 @@ export async function POST(req) {
         }
 
         const res = await pool.query(
-            `INSERT INTO ecom_reviews (user_id, rating, title, comment, is_approved)
+            `INSERT INTO reviews (user_id, rating, title, comment, is_approved)
              VALUES ($1, $2, $3, $4, FALSE)
              RETURNING *`,
             [auth.payload.user_id, rating, title, comment]
@@ -85,7 +85,7 @@ export async function PUT(req) {
         const { review_id, is_approved } = await req.json();
 
         const res = await pool.query(
-            "UPDATE ecom_reviews SET is_approved = $1, updated_at = now() WHERE review_id = $2 RETURNING *",
+            "UPDATE reviews SET is_approved = $1, updated_at = now() WHERE review_id = $2 RETURNING *",
             [is_approved, review_id]
         );
 
@@ -108,7 +108,7 @@ export async function DELETE(req) {
         const review_id = searchParams.get('id');
 
         const res = await pool.query(
-            "DELETE FROM ecom_reviews WHERE review_id = $1 RETURNING *",
+            "DELETE FROM reviews WHERE review_id = $1 RETURNING *",
             [review_id]
         );
 

@@ -108,7 +108,7 @@ const PurchaseDetailsPage = ({ params }) => {
 
                     <div className="mt-12 text-center border-t border-gray-100 pt-8">
                         <p className="text-[9px] font-bold italic text-gray-300 uppercase tracking-[0.3em]">Computer Generated Document • No Signature Required</p>
-                        <p className="mt-2 text-[10px] font-black text-gray-200 tracking-widest uppercase italic">© {new Date().getFullYear()} DISIBIN LTD</p>
+                        <p className="mt-2 text-[10px] font-black text-gray-200 tracking-widest uppercase italic">© {new Date().getFullYear()} Razers LTD</p>
                     </div>
                 </div>
 

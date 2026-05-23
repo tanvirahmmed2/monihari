@@ -17,9 +17,9 @@ export async function GET() {
                 c.phone,
                 c.name,
                 p.paid_at AS date
-            FROM ecom_payments p
-            JOIN ecom_orders o ON p.order_id = o.order_id
-            JOIN ecom_customers c ON o.customer_id = c.customer_id
+            FROM payments p
+            JOIN orders o ON p.order_id = o.order_id
+            JOIN customers c ON o.customer_id = c.customer_id
             WHERE o.status IN ('confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered')
             ORDER BY p.paid_at DESC
         `;

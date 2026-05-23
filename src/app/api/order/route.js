@@ -8,11 +8,11 @@ async function getOrderDetails(client, orderId) {
             c.name, p.payment_method, p.payment_status, p.amount AS actual_paid, 
             p.amount_received, p.change_amount,
             JSON_AGG(JSON_BUILD_OBJECT('name', pr.name, 'quantity', oi.quantity, 'price', oi.price)) AS items
-        FROM ecom_orders o
-        JOIN ecom_customers c  ON o.customer_id = c.customer_id
-        JOIN ecom_payments p   ON o.order_id    = p.order_id
-        JOIN ecom_order_items oi ON o.order_id  = oi.order_id
-        JOIN ecom_products pr  ON oi.product_id = pr.product_id
+        FROM orders o
+        JOIN customers c  ON o.customer_id = c.customer_id
+        JOIN payments p   ON o.order_id    = p.order_id
+        JOIN order_items oi ON o.order_id  = oi.order_id
+        JOIN products pr  ON oi.product_id = pr.product_id
         WHERE o.order_id = $1
         GROUP BY o.order_id, c.name, p.payment_method, p.payment_status, p.amount_received, p.change_amount, p.amount
     `, [orderId]);
@@ -32,18 +32,18 @@ export async function POST(req) {
         if (!resolvedCustomerId && phone) {
             const client = await pool.connect();
             try {
-                // 1. Check if customer already exists in ecom_customers
-                const custRes = await client.query("SELECT customer_id FROM ecom_customers WHERE phone = $1", [phone]);
+                // 1. Check if customer already exists in customers
+                const custRes = await client.query("SELECT customer_id FROM customers WHERE phone = $1", [phone]);
                 if (custRes.rowCount > 0) {
                     resolvedCustomerId = custRes.rows[0].customer_id;
                 } else {
                     // 2. Not in customers. Check if a user exists with this phone to get a name
-                    const userRes = await client.query("SELECT name FROM ecom_users WHERE phone = $1", [phone]);
+                    const userRes = await client.query("SELECT name FROM users WHERE phone = $1", [phone]);
                     const nameToUse = userRes.rowCount > 0 ? userRes.rows[0].name : 'Guest';
                     
                     // 3. Create a new customer record
                     const newCust = await client.query(
-                        "INSERT INTO ecom_customers (name, phone) VALUES ($1, $2) RETURNING customer_id",
+                        "INSERT INTO customers (name, phone) VALUES ($1, $2) RETURNING customer_id",
                         [nameToUse, phone]
                     );
                     resolvedCustomerId = newCust.rows[0].customer_id;
@@ -71,7 +71,7 @@ export async function POST(req) {
         const payType = payment_type || (orderStatus === 'delivered' ? 'prepaid' : 'cod');
 
         const orderRes = await client.query(
-            `INSERT INTO ecom_orders (customer_id, phone, shipping_address, delivery_charge, note, subtotal_amount, total_discount_amount, total_amount, due_amount, payment_type, status, created_at) 
+            `INSERT INTO orders (customer_id, phone, shipping_address, delivery_charge, note, subtotal_amount, total_discount_amount, total_amount, due_amount, payment_type, status, created_at) 
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING order_id`,
             [resolvedCustomerId, phone, address || 'POS Sale', deliveryCharge || 0, note || '', subtotal, discount, total, due, payType, orderStatus, createdAt || new Date()]
         );
@@ -80,12 +80,12 @@ export async function POST(req) {
         // Deduct stock for all non-pending statuses (confirmed, delivered, processing, shipped, etc.)
         for (const item of items) {
             await client.query(
-                "INSERT INTO ecom_order_items (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)",
+                "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)",
                 [orderId, item.product_id, item.quantity, item.price]
             );
             if (orderStatus !== 'pending') {
                 const stockUpdate = await client.query(
-                    "UPDATE ecom_products SET stock = stock - $1 WHERE product_id = $2 AND stock >= $1",
+                    "UPDATE products SET stock = stock - $1 WHERE product_id = $2 AND stock >= $1",
                     [item.quantity, item.product_id]
                 );
                 if (stockUpdate.rowCount === 0) throw new Error(`Insufficient stock for Product ID: ${item.product_id}`);
@@ -93,7 +93,7 @@ export async function POST(req) {
         }
 
         await client.query(
-            `INSERT INTO ecom_payments (order_id, payment_method, amount, amount_received, change_amount, payment_status, transaction_id)
+            `INSERT INTO payments (order_id, payment_method, amount, amount_received, change_amount, payment_status, transaction_id)
              VALUES ($1, $2, $3, $4, $5, $6, $7)`,
             [orderId, paymentMethod || 'cash', actualPaid, actualPaid, change_amount || 0, pStatus, transactionId || null]
         );
@@ -119,7 +119,7 @@ export async function PUT(req) {
         await client.query('BEGIN');
 
         const currentOrder = await client.query(
-            "SELECT status FROM ecom_orders WHERE order_id = $1",
+            "SELECT status FROM orders WHERE order_id = $1",
             [orderId]
         );
         if (currentOrder.rowCount === 0) throw new Error("Order not found");
@@ -134,19 +134,19 @@ export async function PUT(req) {
             // Deduct stock only if moving from pending to confirmed
             if (orderStatus === 'pending') {
                 const items = await client.query(
-                    "SELECT product_id, quantity FROM ecom_order_items WHERE order_id = $1",
+                    "SELECT product_id, quantity FROM order_items WHERE order_id = $1",
                     [orderId]
                 );
                 for (const item of items.rows) {
                     const update = await client.query(
-                        "UPDATE ecom_products SET stock = stock - $1 WHERE product_id = $2 AND stock >= $1",
+                        "UPDATE products SET stock = stock - $1 WHERE product_id = $2 AND stock >= $1",
                         [item.quantity, item.product_id]
                     );
                     if (update.rowCount === 0) throw new Error("Insufficient stock to confirm order");
                 }
             }
 
-            const orderData = await client.query("SELECT total_amount, due_amount FROM ecom_orders WHERE order_id = $1", [orderId]);
+            const orderData = await client.query("SELECT total_amount, due_amount FROM orders WHERE order_id = $1", [orderId]);
             const total = orderData.rows[0].total_amount;
             const currentDue = orderData.rows[0].due_amount;
 
@@ -158,7 +158,7 @@ export async function PUT(req) {
                 const pStatus = newDue <= 0 ? 'success' : 'partial';
 
                 await client.query(
-                    `UPDATE ecom_payments SET 
+                    `UPDATE payments SET 
                         payment_status = $1, 
                         amount = $2, 
                         amount_received = $3, 
@@ -170,7 +170,7 @@ export async function PUT(req) {
             }
 
             await client.query(
-                "UPDATE ecom_orders SET status = 'confirmed', due_amount = $1 WHERE order_id = $2",
+                "UPDATE orders SET status = 'confirmed', due_amount = $1 WHERE order_id = $2",
                 [newDue, orderId]
             );
             await client.query('COMMIT');
@@ -187,25 +187,25 @@ export async function PUT(req) {
             // Deduct stock only if moving from pending
             if (orderStatus === 'pending') {
                 const items = await client.query(
-                    "SELECT product_id, quantity FROM ecom_order_items WHERE order_id = $1",
+                    "SELECT product_id, quantity FROM order_items WHERE order_id = $1",
                     [orderId]
                 );
                 for (const item of items.rows) {
                     const update = await client.query(
-                        "UPDATE ecom_products SET stock = stock - $1 WHERE product_id = $2 AND stock >= $1",
+                        "UPDATE products SET stock = stock - $1 WHERE product_id = $2 AND stock >= $1",
                         [item.quantity, item.product_id]
                     );
                     if (update.rowCount === 0) throw new Error("Insufficient stock to deliver order");
                 }
             }
             await client.query(
-                "UPDATE ecom_orders SET status = 'delivered', due_amount = 0 WHERE order_id = $1",
+                "UPDATE orders SET status = 'delivered', due_amount = 0 WHERE order_id = $1",
                 [orderId]
             );
             await client.query(
-                `UPDATE ecom_payments p 
+                `UPDATE payments p 
                  SET payment_status = 'success', amount = o.total_amount, amount_received = o.total_amount, change_amount = 0, paid_at = NOW() 
-                 FROM ecom_orders o 
+                 FROM orders o 
                  WHERE p.order_id = o.order_id AND p.order_id = $1`,
                 [orderId]
             );
@@ -218,7 +218,7 @@ export async function PUT(req) {
         if (action === 'ship') {
             if (orderStatus !== 'confirmed') throw new Error(`Cannot ship an order with status: ${orderStatus}`);
             await client.query(
-                "UPDATE ecom_orders SET status = 'shipped' WHERE order_id = $1",
+                "UPDATE orders SET status = 'shipped' WHERE order_id = $1",
                 [orderId]
             );
             await client.query('COMMIT');
@@ -231,13 +231,13 @@ export async function PUT(req) {
                 throw new Error(`Cannot deliver an order with status: ${orderStatus}. It must be confirmed or shipped first.`);
             }
             await client.query(
-                "UPDATE ecom_orders SET status = 'delivered', due_amount = 0 WHERE order_id = $1",
+                "UPDATE orders SET status = 'delivered', due_amount = 0 WHERE order_id = $1",
                 [orderId]
             );
             await client.query(
-                `UPDATE ecom_payments p 
+                `UPDATE payments p 
                  SET payment_status = 'success', amount = o.total_amount, amount_received = o.total_amount, change_amount = 0, paid_at = NOW() 
-                 FROM ecom_orders o 
+                 FROM orders o 
                  WHERE p.order_id = o.order_id AND p.order_id = $1`,
                 [orderId]
             );
@@ -252,18 +252,18 @@ export async function PUT(req) {
             // Restore stock if it was already deducted (confirmed)
             if (orderStatus === 'confirmed') {
                 const items = await client.query(
-                    "SELECT product_id, quantity FROM ecom_order_items WHERE order_id = $1",
+                    "SELECT product_id, quantity FROM order_items WHERE order_id = $1",
                     [orderId]
                 );
                 for (const item of items.rows) {
                     await client.query(
-                        "UPDATE ecom_products SET stock = stock + $1 WHERE product_id = $2",
+                        "UPDATE products SET stock = stock + $1 WHERE product_id = $2",
                         [item.quantity, item.product_id]
                     );
                 }
             }
             await client.query(
-                "UPDATE ecom_orders SET status = 'cancelled' WHERE order_id = $1",
+                "UPDATE orders SET status = 'cancelled' WHERE order_id = $1",
                 [orderId]
             );
             await client.query('COMMIT');
@@ -278,21 +278,21 @@ export async function PUT(req) {
             }
 
             const items = await client.query(
-                "SELECT product_id, quantity FROM ecom_order_items WHERE order_id = $1",
+                "SELECT product_id, quantity FROM order_items WHERE order_id = $1",
                 [orderId]
             );
             for (const item of items.rows) {
                 await client.query(
-                    "UPDATE ecom_products SET stock = stock + $1 WHERE product_id = $2",
+                    "UPDATE products SET stock = stock + $1 WHERE product_id = $2",
                     [item.quantity, item.product_id]
                 );
             }
             await client.query(
-                "UPDATE ecom_orders SET status = 'returned' WHERE order_id = $1",
+                "UPDATE orders SET status = 'returned' WHERE order_id = $1",
                 [orderId]
             );
             await client.query(
-                "UPDATE ecom_payments SET payment_status = 'refunded' WHERE order_id = $1",
+                "UPDATE payments SET payment_status = 'refunded' WHERE order_id = $1",
                 [orderId]
             );
             await client.query('COMMIT');
@@ -303,19 +303,19 @@ export async function PUT(req) {
         if (action === 'delete') {
             if (['confirmed', 'shipped', 'delivered'].includes(orderStatus)) {
                 const items = await client.query(
-                    "SELECT product_id, quantity FROM ecom_order_items WHERE order_id = $1",
+                    "SELECT product_id, quantity FROM order_items WHERE order_id = $1",
                     [orderId]
                 );
                 for (const item of items.rows) {
                     await client.query(
-                        "UPDATE ecom_products SET stock = stock + $1 WHERE product_id = $2",
+                        "UPDATE products SET stock = stock + $1 WHERE product_id = $2",
                         [item.quantity, item.product_id]
                     );
                 }
             }
-            await client.query("DELETE FROM ecom_order_items WHERE order_id = $1", [orderId]);
-            await client.query("DELETE FROM ecom_payments WHERE order_id = $1", [orderId]);
-            await client.query("DELETE FROM ecom_orders WHERE order_id = $1", [orderId]);
+            await client.query("DELETE FROM order_items WHERE order_id = $1", [orderId]);
+            await client.query("DELETE FROM payments WHERE order_id = $1", [orderId]);
+            await client.query("DELETE FROM orders WHERE order_id = $1", [orderId]);
             await client.query('COMMIT');
             return NextResponse.json({ success: true, message: "Order deleted successfully" });
         }
@@ -342,11 +342,11 @@ export async function GET() {
                 p.payment_status, p.payment_method, o.created_at AS date,
                 JSON_AGG(JSON_BUILD_OBJECT('name', pr.name, 'quantity', oi.quantity, 'price', oi.price)) AS product_list,
                 SUM(oi.quantity) AS total_items_count
-            FROM ecom_orders o
-            JOIN ecom_customers c    ON o.customer_id = c.customer_id
-            JOIN ecom_payments p     ON o.order_id    = p.order_id
-            JOIN ecom_order_items oi ON o.order_id    = oi.order_id
-            JOIN ecom_products pr    ON oi.product_id = pr.product_id
+            FROM orders o
+            JOIN customers c    ON o.customer_id = c.customer_id
+            JOIN payments p     ON o.order_id    = p.order_id
+            JOIN order_items oi ON o.order_id    = oi.order_id
+            JOIN products pr    ON oi.product_id = pr.product_id
             GROUP BY o.order_id, c.name, c.phone, o.total_amount, o.due_amount, p.payment_status, p.payment_method, o.created_at, o.shipping_address, o.delivery_charge, o.note
             ORDER BY o.created_at DESC
         `;

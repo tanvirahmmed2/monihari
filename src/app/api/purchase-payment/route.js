@@ -17,9 +17,9 @@ export async function GET(req) {
                 p.supplier_name,
                 p.invoice_no,
                 p.total_amount AS bill_total,
-                (SELECT COUNT(*) FROM ecom_purchase_items WHERE purchase_id = p.purchase_id) AS total_products
-            FROM ecom_purchase_payments pp
-            JOIN ecom_purchases p ON pp.purchase_id = p.purchase_id
+                (SELECT COUNT(*) FROM purchase_items WHERE purchase_id = p.purchase_id) AS total_products
+            FROM purchase_payments pp
+            JOIN purchases p ON pp.purchase_id = p.purchase_id
             WHERE p.supplier_name ILIKE $1 
                OR p.invoice_no ILIKE $1
             ORDER BY pp.payment_date DESC

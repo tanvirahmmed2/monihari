@@ -41,7 +41,7 @@ const Navbar = () => {
         <Link href={'/'} className='flex items-center gap-2 group'>
 
           <span className='text-2xl font-black tracking-tight text-slate-900 uppercase '>
-            {siteData?.website_name}
+            Razers
           </span>
         </Link>
         <div className='hidden md:flex items-center justify-center w-auto gap-0.5'>

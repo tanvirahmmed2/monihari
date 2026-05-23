@@ -374,7 +374,7 @@ export const printOrder = (order) => {
         <div class="footer">
           <p class="footer-thanks">Thank you for shopping with us</p>
           <p class="footer-note">Exchange within 7 days with receipt &nbsp;·&nbsp; Keep receipt for reference</p>
-          <p class="footer-brand">© ${new Date().getFullYear()} &nbsp; Powered by Disibin</p>
+          <p class="footer-brand">© ${new Date().getFullYear()} &nbsp; Powered by Razers</p>
         </div>
 
       </body>

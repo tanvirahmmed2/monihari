@@ -12,7 +12,7 @@ const { id } = await params;
         }
 
         const data = await pool.query(
-            `SELECT * FROM ecom_products WHERE (category_id = $1 OR sub_category_id = $1) ORDER BY created_at DESC LIMIT 50`,
+            `SELECT * FROM products WHERE (category_id = $1 OR sub_category_id = $1) ORDER BY created_at DESC LIMIT 50`,
             [id]
         );
         const result = data.rows;

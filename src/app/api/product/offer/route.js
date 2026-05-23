@@ -9,14 +9,14 @@ const { searchParams } = new URL(req.url);
         const offset = (page - 1) * limit;
 
         const countRes = await pool.query(
-            `SELECT COUNT(*) FROM ecom_products WHERE discount_price > 0`,
+            `SELECT COUNT(*) FROM products WHERE discount_price > 0`,
             []
         );
         const totalItems = parseInt(countRes.rows[0].count);
         const totalPages = Math.ceil(totalItems / limit) || 1;
 
         const data = await pool.query(
-            `SELECT * FROM ecom_products WHERE discount_price > 0 ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
+            `SELECT * FROM products WHERE discount_price > 0 ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
             [limit, offset]
         );
         

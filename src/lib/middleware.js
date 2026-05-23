@@ -4,7 +4,7 @@ import { JWT_SECRET } from "./database/secret";
 import { pool } from "./database/db";
 /**
  * Common function to get the authenticated user from the request.
- * It uses the 'nvs_user_token' cookie and validates it against the ecom_users table.
+ * It uses the 'nvs_user_token' cookie and validates it against the users table.
  */
 async function getAuthenticatedUser() {
     try {
@@ -15,10 +15,10 @@ async function getAuthenticatedUser() {
 
         const decoded = jwt.verify(token, JWT_SECRET);
         
-        // Use ecom_users as the single source of truth for all roles
+        // Use users as the single source of truth for all roles
         const res = await pool.query(
             `SELECT user_id, name, email, phone, role, created_at 
-             FROM ecom_users 
+             FROM users 
              WHERE user_id = $1 AND is_active = TRUE`, 
             [decoded.user_id || decoded.id]
         );

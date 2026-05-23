@@ -17,9 +17,9 @@ export async function GET(req) {
                 c.phone,
                 c.name,
                 p.created_at AS date
-            FROM ecom_payments p
-            JOIN ecom_orders o ON p.order_id = o.order_id
-            JOIN ecom_customers c ON o.customer_id = c.customer_id
+            FROM payments p
+            JOIN orders o ON p.order_id = o.order_id
+            JOIN customers c ON o.customer_id = c.customer_id
             WHERE c.phone ILIKE $1 
                OR CAST(o.order_id AS TEXT) = $2 
                OR p.transaction_id ILIKE $1

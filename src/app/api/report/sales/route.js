@@ -7,8 +7,8 @@ export async function GET() {
         const statsQuery = `
             SELECT 
                 COALESCE(SUM(total_amount), 0) AS total_revenue,
-                (SELECT COALESCE(SUM(oi.quantity), 0) FROM ecom_order_items oi JOIN ecom_orders o ON oi.order_id = o.order_id WHERE o.status IN ('confirmed', 'shipped', 'delivered', 'completed', 'confirm')) AS total_items_sold
-            FROM ecom_orders 
+                (SELECT COALESCE(SUM(oi.quantity), 0) FROM order_items oi JOIN orders o ON oi.order_id = o.order_id WHERE o.status IN ('confirmed', 'shipped', 'delivered', 'completed', 'confirm')) AS total_items_sold
+            FROM orders 
             WHERE status IN ('confirmed', 'shipped', 'delivered', 'completed', 'confirm');
         `;
 
@@ -17,9 +17,9 @@ export async function GET() {
                 p.name, 
                 SUM(oi.quantity) AS sold_qty,
                 SUM(oi.quantity * oi.price) AS revenue
-            FROM ecom_order_items oi
-            JOIN ecom_products p ON oi.product_id = p.product_id
-            JOIN ecom_orders o ON oi.order_id = o.order_id
+            FROM order_items oi
+            JOIN products p ON oi.product_id = p.product_id
+            JOIN orders o ON oi.order_id = o.order_id
             WHERE o.status IN ('confirmed', 'shipped', 'delivered', 'completed', 'confirm')
             GROUP BY p.product_id, p.name
             ORDER BY sold_qty DESC
