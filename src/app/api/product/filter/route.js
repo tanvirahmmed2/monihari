@@ -46,11 +46,29 @@ const { searchParams } = new URL(req.url);
         params.push(limit, offset);
         const dataQuery = `SELECT * FROM products ${where} ORDER BY ${orderBy} LIMIT $${params.length - 1} OFFSET $${params.length}`;
         const data = await pool.query(dataQuery, params);
+        const products = data.rows;
+
+        // Attach variants to each product
+        if (products.length > 0) {
+            const productIds = products.map(p => p.product_id);
+            const variantsRes = await pool.query(
+                `SELECT * FROM product_variants WHERE product_id = ANY($1) ORDER BY variant_id ASC`,
+                [productIds]
+            );
+            const variantsByProduct = {};
+            for (const v of variantsRes.rows) {
+                if (!variantsByProduct[v.product_id]) variantsByProduct[v.product_id] = [];
+                variantsByProduct[v.product_id].push(v);
+            }
+            for (const p of products) {
+                p.variants = variantsByProduct[p.product_id] || [];
+            }
+        }
 
         return NextResponse.json({
             success: true,
-            message: data.rows.length > 0 ? 'Successfully fetched data' : 'No product found',
-            payload: data.rows,
+            message: products.length > 0 ? 'Successfully fetched data' : 'No product found',
+            payload: products,
             pagination: { totalItems, totalPages, currentPage: page }
         }, { status: 200 });
 

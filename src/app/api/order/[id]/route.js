@@ -38,7 +38,8 @@ const { id } = await params;
                         'price', oi.price,
                         'sale_price', pr.sale_price, 
                         'discount_price', pr.discount_price,
-                        'barcode', pr.barcode
+                        'barcode', pr.barcode,
+                        'variant_name', pv.variant_name
                     )
                 ) AS items
             FROM orders o
@@ -46,6 +47,7 @@ const { id } = await params;
             JOIN payments p ON o.order_id = p.order_id
             JOIN order_items oi ON o.order_id = oi.order_id
             JOIN products pr ON oi.product_id = pr.product_id
+            LEFT JOIN product_variants pv ON oi.variant_id = pv.variant_id
             WHERE o.order_id = $1
             GROUP BY 
                 o.order_id, 

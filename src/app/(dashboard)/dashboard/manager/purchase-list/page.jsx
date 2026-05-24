@@ -138,7 +138,7 @@ const PurchaseList = () => {
                                         <FaPrint />
                                     </button>
                                     <Link
-                                        href={`/dashboard/purchase/${purchase.purchase_id}`}
+                                        href={`/dashboard/manager/purchase/${purchase.purchase_id}`}
                                         className='w-full bg-gray-200 text-gray-600 p-2 rounded-lg flex items-center justify-center'
                                     >
                                         <LuView />

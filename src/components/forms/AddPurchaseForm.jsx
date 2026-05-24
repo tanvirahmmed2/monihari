@@ -29,6 +29,8 @@ const AddPurchaseForm = () => {
 
     const [products, setProducts] = useState([])
     const [searchTerm, setSearchTerm] = useState('')
+    // Variant picker for purchase
+    const [pendingProduct, setPendingProduct] = useState(null)
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
@@ -55,14 +57,29 @@ const AddPurchaseForm = () => {
             const response = await axios.get(`/api/product/search?q=${code}`, { withCredentials: true })
             const foundItems = response.data.payload
             if (foundItems && foundItems.length === 1) {
-                addToPurchase(foundItems[0])
-                setSearchTerm('') 
-                toast.success(`${foundItems[0].name} added`)
+                const p = foundItems[0]
+                if (p.variants?.length > 0) {
+                    setPendingProduct(p)
+                } else {
+                    addToPurchase(p)
+                    toast.success(`${p.name} added`)
+                }
+                setSearchTerm('')
             } else {
-                setSearchTerm(code) 
+                setSearchTerm(code)
             }
         } catch (error) {
             console.error("Scanner error:", error)
+        }
+    }
+
+    const handleSearchSelect = (product) => {
+        if (product.variants?.length > 0) {
+            setPendingProduct(product)
+            setSearchTerm('')
+        } else {
+            addToPurchase(product)
+            setSearchTerm('')
         }
     }
 
@@ -76,9 +93,11 @@ const AddPurchaseForm = () => {
         setTotals({ subtotal: sub, total: Math.max(0, sub - disc) })
     }, [purchaseItems, formData.extra_discount])
 
-    const handleItemUpdate = (productId, field, value) => {
-        setPurchaseItems(prev => prev.map(item => 
-            item.product_id === productId ? { ...item, [field]: value } : item
+    const handleItemUpdate = (key, field, value) => {
+        setPurchaseItems(prev => prev.map(item =>
+            (item._key === key || String(item.product_id) === String(key))
+                ? { ...item, [field]: value }
+                : item
         ))
     }
 
@@ -105,7 +124,7 @@ const AddPurchaseForm = () => {
             toast.success(response.data.message)
             setFormData({ supplier_id: '', invoice_no: '', extra_discount: 0, payment_method: 'cash', transaction_id: '', note: '' })
             setSearchTerm(''); setProducts([]); clearPurchase()
-            router.push(`/dashboard/purchase/${response.data.purchase_id}`)
+            router.push(`/dashboard/manager/purchase/${response.data.purchase_id}`)
 
         } catch (error) {
             toast.error(error.response?.data?.message || "Error saving purchase")
@@ -134,18 +153,53 @@ const AddPurchaseForm = () => {
                 {searchTerm.length > 0 && (
                     <div className="w-full flex flex-col gap-2 items-center justify-center absolute bg-white top-full border">
                         {products.length > 0 ? products.map((product) => (
-                            <div  onClick={() => {
-                                        addToPurchase(product);
-                                        setSearchTerm('');
-                                    }} key={product.product_id} className="w-full flex flex-row even:bg-gray-200 items-center justify-center p-1">
+                            <div
+                                onClick={() => handleSearchSelect(product)}
+                                key={product.product_id}
+                                className="w-full flex flex-row even:bg-gray-200 items-center justify-center p-1"
+                            >
                                 <div className="flex-1">
                                     <p className="font-bold text-gray-800">{product.name}</p>
-                                    <p className="text-xs text-gray-500 font-mono">{product.barcode || 'No Barcode'}</p>
+                                    <p className="text-xs text-gray-500 font-mono">
+                                        {product.barcode || 'No Barcode'}
+                                        {product.variants?.length > 0 && <span className="text-violet-500 ml-2">· {product.variants.length} variants</span>}
+                                    </p>
                                 </div>
                                 <p className="flex-1 text-center font-semibold text-sky-600">৳{product.purchase_price}</p>
-                                
                             </div>
                         )) : <div className="p-4 text-center text-gray-400">No products found</div>}
+                    </div>
+                )}
+
+                {/* ── Inline Variant Picker ── */}
+                {pendingProduct && (
+                    <div className="absolute top-full left-0 w-full mt-1 bg-white border border-violet-200 rounded-xl shadow-xl z-50 overflow-hidden">
+                        <div className="flex items-center justify-between px-4 py-3 bg-violet-50 border-b border-violet-100">
+                            <div>
+                                <p className="text-xs font-black uppercase tracking-widest text-violet-500">Select Variant to Purchase</p>
+                                <p className="text-sm font-bold text-gray-800">{pendingProduct.name}</p>
+                            </div>
+                            <button onClick={() => setPendingProduct(null)} className="text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
+                        </div>
+                        <div className="max-h-48 overflow-y-auto">
+                            {pendingProduct.variants.map(v => (
+                                <div
+                                    key={v.variant_id}
+                                    onClick={() => {
+                                        addToPurchase(pendingProduct, v)
+                                        setPendingProduct(null)
+                                        toast.success(`${pendingProduct.name} (${v.variant_name}) added`)
+                                    }}
+                                    className="flex items-center justify-between p-3 border-b border-gray-50 last:border-0 cursor-pointer hover:bg-violet-50 transition-colors"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-bold text-gray-800">{v.variant_name}</span>
+                                        <span className="text-xs text-gray-400">Current stock: {v.stock}</span>
+                                    </div>
+                                    <span className="text-sm font-semibold text-sky-600">৳{pendingProduct.purchase_price}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>
@@ -186,25 +240,26 @@ const AddPurchaseForm = () => {
                     </h3>
 
                     {purchaseItems.length > 0 ? purchaseItems.map((item) => (
-                        <div key={item.product_id} className="grid grid-cols-12 items-center gap-3 px-4 py-2 even:bg-gray-50 border border-gray-100 rounded-2xl">
+                        <div key={item._key || item.product_id} className="grid grid-cols-12 items-center gap-3 px-4 py-2 even:bg-gray-50 border border-gray-100 rounded-2xl">
                             <div className="col-span-12 lg:col-span-4">
                                 <p className="text-sm font-bold text-gray-800 truncate">{item.name}</p>
+                                {item.variant_name && <p className="text-[10px] text-violet-500 font-bold">{item.variant_name}</p>}
                                 <p className="text-[10px] text-gray-400">ID: {item.product_id}</p>
                             </div>
                             <div className="col-span-4 lg:col-span-2">
                                 <label className="text-[9px] font-bold text-gray-400 uppercase block">Unit Price</label>
-                                <input type="number" value={item.purchase_price} onChange={(e) => handleItemUpdate(item.product_id, 'purchase_price', e.target.value)} className="w-full border rounded-md px-2 py-1 text-sm outline-sky-400" />
+                                <input type="number" value={item.purchase_price} onChange={(e) => handleItemUpdate(item._key || item.product_id, 'purchase_price', e.target.value)} className="w-full border rounded-md px-2 py-1 text-sm outline-sky-400" />
                             </div>
                             <div className="col-span-4 lg:col-span-2">
                                 <label className="text-[9px] font-bold text-gray-400 uppercase block">Qty</label>
-                                <input type="number" min="1" value={item.quantity} onChange={(e) => handleItemUpdate(item.product_id, 'quantity', e.target.value)} className="w-full border rounded-md px-2 py-1 text-sm outline-sky-400" />
+                                <input type="number" min="1" value={item.quantity} onChange={(e) => handleItemUpdate(item._key || item.product_id, 'quantity', e.target.value)} className="w-full border rounded-md px-2 py-1 text-sm outline-sky-400" />
                             </div>
                             <div className="col-span-3 lg:col-span-3 text-right">
                                 <label className="text-[9px] font-bold text-gray-400 uppercase block">Subtotal</label>
                                 <p className="text-sm font-black text-gray-800">৳{((item.purchase_price || 0) * (item.quantity || 0)).toFixed(2)}</p>
                             </div>
                             <div className="col-span-1 flex justify-end">
-                                <button type="button" onClick={() => removeFromPurchase(item.product_id)} className="text-red-300 hover:text-red-600"><FaTrash size={14} /></button>
+                                <button type="button" onClick={() => removeFromPurchase(item._key || item.product_id)} className="text-red-300 hover:text-red-600"><FaTrash size={14} /></button>
                             </div>
                         </div>
                     )) : (

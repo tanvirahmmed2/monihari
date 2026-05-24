@@ -1,11 +1,13 @@
 'use client'
-import React, { use, useEffect, useState } from 'react'
+import React, { use, useEffect, useState, useContext } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 import { printPurchaseInvoice } from '@/lib/database/printPurchaseInvoice'
+import { Context } from '@/components/helper/Context'
 
 const PurchaseDetailsPage = ({ params }) => {
     const { id } = use(params)
+    const { siteData } = useContext(Context)
     const [purchase, setPurchase] = useState(null)
     const [loading, setLoading] = useState(true)
 
@@ -34,9 +36,9 @@ const PurchaseDetailsPage = ({ params }) => {
                     
                     <div className="w-full flex flex-row items-start justify-between">
                         <div className="flex flex-col gap-1">
-                            <h1 className="text-2xl font-black tracking-tight text-gray-900 leading-none">NIZAM VARIETIES STORE</h1>
-                            <p className="text-[10px] text-gray-400 uppercase tracking-[0.2em] font-medium">Pakuritala Bazar, Tarakanda</p>
-                            <p className='text-[11px] text-gray-500 font-medium'>Contact: 01645-172356</p>
+                            <h1 className="text-2xl font-black tracking-tight text-gray-900 leading-none">{siteData.name.toUpperCase()}</h1>
+                            {siteData.address && <p className="text-[10px] text-gray-400 uppercase tracking-[0.2em] font-medium">{siteData.address}</p>}
+                            {siteData.phone   && <p className="text-[11px] text-gray-500 font-medium">Contact: {siteData.phone}</p>}
                         </div>
                         <div className="flex flex-col text-right gap-1">
                             <h2 className="text-xl font-black text-blue-600 uppercase tracking-tighter">Purchase Record</h2>
@@ -108,7 +110,7 @@ const PurchaseDetailsPage = ({ params }) => {
 
                     <div className="mt-12 text-center border-t border-gray-100 pt-8">
                         <p className="text-[9px] font-bold italic text-gray-300 uppercase tracking-[0.3em]">Computer Generated Document • No Signature Required</p>
-                        <p className="mt-2 text-[10px] font-black text-gray-200 tracking-widest uppercase italic">© {new Date().getFullYear()} Razers LTD</p>
+                        <p className="mt-2 text-[10px] font-black text-gray-200 tracking-widest uppercase italic">© {new Date().getFullYear()} {siteData.name}</p>
                     </div>
                 </div>
 
@@ -118,7 +120,7 @@ const PurchaseDetailsPage = ({ params }) => {
                         ← Back to List
                     </Link>
                     <button 
-                        onClick={() => printPurchaseInvoice(purchase)}
+                        onClick={() => printPurchaseInvoice(purchase, siteData)}
                         className="flex-1 py-3 text-xs font-black text-white bg-gray-900 rounded shadow-sm uppercase tracking-[0.2em] transition-all hover:bg-black hover:shadow-lg active:scale-[0.98]"
                     >
                         Print Invoice

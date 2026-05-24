@@ -41,7 +41,8 @@ if (!filterStatus || !VALID_STATUSES.includes(filterStatus)) {
                         'quantity', oi.quantity,
                         'price', oi.price,
                         'sale_price', pr.sale_price,
-                        'discount_price', pr.discount_price
+                        'discount_price', pr.discount_price,
+                        'variant_name', pv.variant_name
                     )
                 ) AS product_list
             FROM orders o
@@ -49,6 +50,7 @@ if (!filterStatus || !VALID_STATUSES.includes(filterStatus)) {
             JOIN payments p     ON o.order_id    = p.order_id
             JOIN order_items oi ON o.order_id    = oi.order_id
             JOIN products pr    ON oi.product_id = pr.product_id
+            LEFT JOIN product_variants pv ON oi.variant_id = pv.variant_id
             WHERE o.status = $1
             GROUP BY 
                 o.order_id, c.name, c.phone,

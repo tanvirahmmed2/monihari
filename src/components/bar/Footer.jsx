@@ -16,7 +16,7 @@ const Footer = () => {
           <div className='flex items-center gap-2 mb-2'>
          
             <h2 className='text-xl font-bold text-white uppercase tracking-tighter'>
-              {siteData?.website_name}
+              {siteData?.name}
             </h2>
           </div>
           <p className='text-sm leading-relaxed text-slate-400'>
@@ -46,9 +46,9 @@ const Footer = () => {
         </FooterColumn>
 
         <FooterColumn title='Contact Us'>
-          <ContactItem icon={<Mail size={16} />} text={siteData?.website_email } />
-          <ContactItem icon={<Phone size={16} />} text={siteData?.website_phone || '+880 1805003886'} />
-          <ContactItem icon={<MapPin size={16} />} text={`${siteData?.website_address || 'Dhaka'}, ${siteData?.city || ''} ${siteData?.country || ''}`} />
+          <ContactItem icon={<Mail size={16} />} text={siteData?.email} />
+          <ContactItem icon={<Phone size={16} />} text={siteData?.phone} />
+          <ContactItem icon={<MapPin size={16} />} text={[siteData?.address, siteData?.city, siteData?.country].filter(Boolean).join(', ')} />
         </FooterColumn>
       </div>
       

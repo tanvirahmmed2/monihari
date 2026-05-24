@@ -18,6 +18,7 @@ const PendingOrdersPage = () => {
   const [confirmDeliver, setConfirmDeliver] = useState(null)
   const [acceptingOrder, setAcceptingOrder] = useState(null)
   const [receivedAmount, setReceivedAmount] = useState('')
+  const [processing, setProcessing] = useState(null)
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -53,15 +54,20 @@ const PendingOrdersPage = () => {
   }
 
   const directDeliverOrder = async (orderId) => {
+    if (processing) return
+    setProcessing(orderId)
     try {
       const res = await axios.put('/api/order', { orderId, action: 'direct_deliver' }, { withCredentials: true })
       if (res.data.success) {
         toast.success('Order delivered immediately!')
+        setConfirmDeliver(null)
         fetchOrders()
         generateReceipt(res.data.payload, siteData)
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Delivery failed')
+    } finally {
+      setProcessing(null)
     }
   }
 
@@ -149,12 +155,15 @@ const PendingOrdersPage = () => {
               <p className='text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest'>Order Items</p>
               <div className='flex flex-col gap-2 max-h-32 overflow-y-auto pr-2'>
                 {order.product_list?.length > 0 ? order.product_list.map((product, pIdx) => (
-                  <div key={pIdx} className='flex justify-between items-center text-sm'>
-                    <p className='font-bold text-slate-700 truncate pr-2 flex-1'>
-                      <span className='text-sky-500 font-black mr-2'>x{product.quantity}</span>
-                      {product.name}
-                    </p>
-                    <p className='font-black text-slate-900'>৳{(Number(product.price) * Number(product.quantity)).toLocaleString()}</p>
+                  <div key={pIdx} className='flex justify-between items-start text-sm gap-2'>
+                    <div className='flex-1 min-w-0'>
+                      <p className='font-bold text-slate-700 truncate'>
+                        <span className='text-sky-500 font-black mr-1'>x{product.quantity}</span>
+                        {product.name}
+                      </p>
+                      {product.variant_name && <span className='text-[10px] font-bold uppercase tracking-wide text-slate-400 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5'>{product.variant_name}</span>}
+                    </div>
+                    <p className='font-black text-slate-900 shrink-0'>৳{(Number(product.price) * Number(product.quantity)).toLocaleString()}</p>
                   </div>
                 )) : <p className='text-xs text-slate-400 italic'>No product data</p>}
               </div>
@@ -199,8 +208,12 @@ const PendingOrdersPage = () => {
               ) : confirmDeliver === order.order_id ? (
                 <div className='flex flex-col gap-2 w-full animate-in fade-in zoom-in duration-200'>
                   <p className='text-[10px] text-center text-slate-500 font-bold uppercase tracking-widest'>Deliver immediately?</p>
-                  <button onClick={() => directDeliverOrder(order.order_id)} className='w-full bg-emerald-500 hover:bg-emerald-600 text-white p-2.5 rounded-xl flex items-center justify-center gap-1 text-xs font-bold transition-all active:scale-95 shadow-sm'>
-                    <FaCheck /> Confirm Delivery
+                  <button
+                    onClick={() => directDeliverOrder(order.order_id)}
+                    disabled={processing === order.order_id}
+                    className='w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 disabled:cursor-not-allowed text-white p-2.5 rounded-xl flex items-center justify-center gap-1 text-xs font-bold transition-all active:scale-95 shadow-sm'
+                  >
+                    <FaCheck /> {processing === order.order_id ? 'Processing…' : 'Confirm Delivery'}
                   </button>
                   <button onClick={() => setConfirmDeliver(null)} className='w-full bg-slate-100 hover:bg-slate-200 text-slate-600 p-2.5 rounded-xl flex items-center justify-center transition-all active:scale-95'>
                     <FaXmark />

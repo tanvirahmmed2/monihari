@@ -60,28 +60,28 @@ const Support = () => {
           </motion.div>
 
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-            {siteData?.website_email && (
+            {siteData?.email && (
               <ContactCard
                 icon={<Mail size={18} />}
                 title='Email Us'
-                content={siteData.website_email}
+                content={siteData.email}
               />
             )}
-            {siteData?.website_phone && (
+            {siteData?.phone && (
               <ContactCard
                 icon={<Phone size={18} />}
                 title='Call Us'
-                content={siteData.website_phone}
+                content={siteData.phone}
               />
             )}
-            {siteData?.website_address && (
+            {siteData?.address && (
               <ContactCard
                 icon={<MapPin size={18} />}
                 title='Address'
-                content={`${siteData.website_address}${siteData.city ? ', ' + siteData.city : ''}${siteData.country ? ', ' + siteData.country : ''}`}
+                content={[siteData.address, siteData.city, siteData.country].filter(Boolean).join(', ')}
               />
             )}
-            {!siteData?.website_email && !siteData?.website_phone && (
+            {!siteData?.email && !siteData?.phone && (
               <ContactCard
                 icon={<MessageSquare size={18} />}
                 title='Live Chat'

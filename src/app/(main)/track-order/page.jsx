@@ -133,6 +133,7 @@ const OrderCard = ({ order, siteData, index = 0 }) => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-800 line-clamp-1">{item.name}</p>
+                        {item.variant_name && <span className="inline-block text-[10px] font-bold uppercase tracking-wide text-slate-500 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 mt-0.5">{item.variant_name}</span>}
                         <p className="text-xs text-gray-400">Qty: {item.quantity} × ৳{Number(item.price).toLocaleString()}</p>
                       </div>
                       <p className="text-sm font-bold text-gray-700 flex-shrink-0">

@@ -90,6 +90,20 @@ export async function POST(req) {
             const newProduct = await client.query(query, values);
             const productId = newProduct.rows[0].product_id;
 
+            // Save variants if provided
+            const variantsRaw = formData.get('variants');
+            if (variantsRaw) {
+                const variants = JSON.parse(variantsRaw);
+                for (const v of variants) {
+                    if (v.variant_name && v.price !== undefined) {
+                        await client.query(
+                            `INSERT INTO product_variants (product_id, variant_name, price, stock) VALUES ($1, $2, $3, $4)`,
+                            [productId, v.variant_name, parseFloat(v.price), parseInt(v.stock) || 0]
+                        );
+                    }
+                }
+            }
+
             // Fetch the final product to return
             const finalProduct = await client.query(`
                 SELECT p.*, c.name as category_name, b.name as brand_name 
@@ -100,6 +114,8 @@ export async function POST(req) {
             `, [productId]);
 
             const productToReturn = finalProduct.rows[0];
+            const variantsRes = await client.query(`SELECT * FROM product_variants WHERE product_id = $1 ORDER BY variant_id ASC`, [productId]);
+            productToReturn.variants = variantsRes.rows;
 
             await client.query('COMMIT');
             return NextResponse.json({
@@ -320,6 +336,22 @@ export async function PUT(req) {
             return NextResponse.json({ success: false, message: 'Product not found' }, { status: 404 });
         }
 
+        // Sync variants if provided
+        const variantsRaw = formData.get('variants');
+        if (variantsRaw) {
+            const variants = JSON.parse(variantsRaw);
+            // Delete existing then re-insert
+            await client.query(`DELETE FROM product_variants WHERE product_id = $1`, [id]);
+            for (const v of variants) {
+                if (v.variant_name && v.price !== undefined) {
+                    await client.query(
+                        `INSERT INTO product_variants (product_id, variant_name, price, stock) VALUES ($1, $2, $3, $4)`,
+                        [id, v.variant_name, parseFloat(v.price), parseInt(v.stock) || 0]
+                    );
+                }
+            }
+        }
+
         // Fetch the final product to return
         const finalProduct = await client.query(`
             SELECT p.*, c.name as category_name, b.name as brand_name 
@@ -330,6 +362,8 @@ export async function PUT(req) {
         `, [id]);
 
         const productToReturn = finalProduct.rows[0];
+        const variantsRes = await client.query(`SELECT * FROM product_variants WHERE product_id = $1 ORDER BY variant_id ASC`, [id]);
+        productToReturn.variants = variantsRes.rows;
 
         await client.query('COMMIT');
         return NextResponse.json({

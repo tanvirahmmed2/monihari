@@ -53,9 +53,9 @@ const POSSLIPPAGE = ({ params }) => {
                 
                 
                 <header className="text-center space-y-1">
-                    <h1 className="text-xl font-bold text-gray-900 leading-tight warp-break-word">{siteData?.business_name || siteData?.name || "Nizam Varieties Store"}</h1>
-                    <p className="text-[10px] text-gray-500">{siteData?.address || "Pakuritala Bazar, Tarakanda"}</p>
-                    <p className="text-[11px] font-mono">{siteData?.phone || "01645-172356"}</p>
+                    <h1 className="text-xl font-bold text-gray-900 leading-tight warp-break-word">{siteData.name}</h1>
+                    <p className="text-[10px] text-gray-500">{siteData.address}</p>
+                    <p className="text-[11px] font-mono">{siteData.phone}</p>
                     <div className="py-2">
                         <div className="h-px w-full border-t border-dashed border-gray-300" />
                         <span className="text-[8px] font-bold uppercase tracking-[4px] text-gray-400 bg-white px-2 -mt-2 relative">Receipt</span>
@@ -115,6 +115,7 @@ const POSSLIPPAGE = ({ params }) => {
                             <div key={index} className="grid grid-cols-12 gap-1 min-w-0">
                                 <div className="col-span-7 min-w-0">
                                     <p className="text-[14px] font-bold text-gray-900 leading-none truncate block">{item.name}</p>
+                                    {item.variant_name && <span className="inline-block text-[9px] font-bold uppercase tracking-wide text-slate-500 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 mt-0.5">{item.variant_name}</span>}
                                     <p className="text-[13px] text-gray-400 font-mono mt-1">@ {Number(item.price).toFixed(2)}</p>
                                 </div>
                                 <span className="col-span-2 text-[13px] text-center pt-0.5 font-mono text-gray-600">x{item.quantity}</span>
@@ -175,7 +176,7 @@ const POSSLIPPAGE = ({ params }) => {
                 <footer className="mt-6 text-center">
                     <p className="text-[12px] italic font-medium">Thank you! Come again.</p>
                     <p className="mt-6 text-[8px] uppercase tracking-widest text-gray-400">
-                        © {new Date().getFullYear()} {siteData?.business_name || siteData?.name || ''}
+                        © {new Date().getFullYear()} {siteData.name}
                     </p>
                 </footer>
 

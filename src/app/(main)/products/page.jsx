@@ -177,7 +177,7 @@ const ProductsPage = () => {
   )
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 ">
+    <div className="w-full min-h-screen bg-gray-50 p-4 ">
       <div className="w-full mx-auto px-4">
 
         {/* ── Page header ── */}

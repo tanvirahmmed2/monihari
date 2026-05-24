@@ -1,7 +1,12 @@
-export const printOrder = (order) => {
+export const printOrder = (order, siteData) => {
   const iframe = document.createElement('iframe');
   iframe.style.display = 'none';
   document.body.appendChild(iframe);
+
+  const storeName    = siteData.name;
+  const storeAddress = siteData.address;
+  const storePhone   = siteData.phone;
+  const storeLogo    = siteData.logo;
 
   const orderDate = new Date(order.date || Date.now());
   const formattedDate = orderDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -286,9 +291,10 @@ export const printOrder = (order) => {
       <body>
 
         <div class="header">
-          <p class="store-name">Nizam Varieties Store</p>
-          <p class="store-contact">Pakuritala Bazar, Tarakanda &nbsp;·&nbsp;</p>
-          <p class="store-contact">Contact: 01645-172356</p>
+          ${storeLogo ? `<img src="${storeLogo}" alt="${storeName}" style="max-height:40px;object-fit:contain;margin-bottom:5px;">` : ''}
+          <p class="store-name">${storeName}</p>
+          ${storeAddress ? `<p class="store-contact">${storeAddress}</p>` : ''}
+          ${storePhone   ? `<p class="store-contact">Contact: ${storePhone}</p>` : ''}
           <p class="receipt-type">— Sales Receipt —</p>
         </div>
 
@@ -374,7 +380,7 @@ export const printOrder = (order) => {
         <div class="footer">
           <p class="footer-thanks">Thank you for shopping with us</p>
           <p class="footer-note">Exchange within 7 days with receipt &nbsp;·&nbsp; Keep receipt for reference</p>
-          <p class="footer-brand">© ${new Date().getFullYear()} &nbsp; Powered by Razers</p>
+          <p class="footer-brand">© ${new Date().getFullYear()} &nbsp; ${storeName}</p>
         </div>
 
       </body>

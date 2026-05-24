@@ -26,8 +26,8 @@ const SingleProduct = async ({ params }) => {
 
   return (
     <div className='w-full min-h-screen flex flex-col gap-20 items-center justify-center rounded-2xl'>
-      <ProductDetails product={product} />
-      <SameCategory category={product?.category_id} />
+      <ProductDetails key={slug} product={product} />
+      <SameCategory key={`cat-${slug}`} category={product?.category_id} />
     </div>
   )
 }

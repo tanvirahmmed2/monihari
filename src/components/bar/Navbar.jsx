@@ -40,9 +40,13 @@ const Navbar = () => {
        
         <Link href={'/'} className='flex items-center gap-2 group'>
 
-          <span className='text-2xl font-black tracking-tight text-slate-900 uppercase '>
-            Razers
-          </span>
+          {siteData?.logo ? (
+            <img src={siteData.logo} alt={siteData.name} className='h-8 w-auto object-contain' />
+          ) : (
+            <span className='text-2xl font-black tracking-tight text-slate-900 uppercase'>
+              {siteData?.name}
+            </span>
+          )}
         </Link>
         <div className='hidden md:flex items-center justify-center w-auto gap-0.5'>
           <NavLink href='/' icon={<HomeIcon size={16} />} label='Home' active={pathname === '/'} />

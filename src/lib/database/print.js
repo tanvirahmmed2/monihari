@@ -8,10 +8,10 @@ export const generateReceipt = (order, siteData) => {
   const formattedDate = orderDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const formattedTime = orderDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
-  const storeName = siteData?.business_name || siteData?.name || "Nizam Varieties Store";
-  const storeAddress = siteData?.address || "Pakuritala Bazar, Tarakanda";
-  const storePhone = siteData?.phone || "01645-172356";
-  const storeLogo = siteData?.logo || "";
+  const storeName    = siteData.name;
+  const storeAddress = siteData.address;
+  const storePhone   = siteData.phone;
+  const storeLogo    = siteData.logo;
 
   const receiptContent = `
     <!DOCTYPE html>
@@ -172,6 +172,19 @@ export const generateReceipt = (order, siteData) => {
             font-size: 8px;
             color: #dc2626;
             display: block;
+          }
+          .item-variant {
+            display: inline-block;
+            font-size: 7.5px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #6b7280;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 3px;
+            padding: 1px 5px;
+            margin-top: 2px;
           }
           .item-qty {
             font-family: 'DM Mono', monospace;
@@ -349,6 +362,7 @@ export const generateReceipt = (order, siteData) => {
           <div class="item-row">
             <div>
               <span class="item-name">${item.name}</span>
+              ${item.variant_name ? `<span class="item-variant">${item.variant_name}</span>` : ''}
               <span class="item-unit">@ ৳${Number(item.price).toFixed(2)}</span>
               ${item.discount > 0 ? `<span class="item-disc">disc −৳${item.discount}</span>` : ''}
             </div>
@@ -415,7 +429,7 @@ export const generateReceipt = (order, siteData) => {
         <div class="footer">
           <p class="footer-thanks">Thank you for your purchase</p>
           <p class="footer-note">Goods once sold are not returnable &nbsp;·&nbsp; Keep receipt for reference</p>
-          <p class="footer-brand">© ${new Date().getFullYear()} &nbsp; Powered by Razers</p>
+          <p class="footer-brand">© ${new Date().getFullYear()} &nbsp; ${storeName}</p>
         </div>
 
       </body>

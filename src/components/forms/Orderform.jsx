@@ -16,9 +16,12 @@ const Orderform = ({ cartItems = [] }) => {
     const [products, setProducts] = useState([])
     const [searchTerm, setSearchTerm] = useState('')
 
-    // --- NEW STATES FOR MODAL ---
+    // Payment modal
     const [isPaymentModal, setIsPaymentModal] = useState(false)
     const [receivedAmount, setReceivedAmount] = useState(0)
+
+    // Variant picker: holds the product awaiting variant selection
+    const [pendingProduct, setPendingProduct] = useState(null)
 
     const [data, setData] = useState({
         phone: '019',
@@ -50,19 +53,29 @@ const Orderform = ({ cartItems = [] }) => {
         return () => clearTimeout(delayDebounceFn)
     }, [searchTerm])
 
+    const addProductToCart = (product, variant = null) => {
+        if (variant) {
+            if (Number(variant.stock) <= 0) { toast.error('Out of stock'); return }
+            addToCart(product, variant)
+        } else {
+            if (product.variants?.length > 0) {
+                // Has variants — open picker
+                setPendingProduct(product)
+                return
+            }
+            if (Number(product.stock) <= 0) { toast.error('Out of stock'); return }
+            addToCart(product)
+        }
+        setSearchTerm('')
+    }
+
     const handleBarcodeScan = async (code) => {
         if (!code) return
         try {
             const response = await axios.get(`/api/product/search?q=${code}`, { withCredentials: true })
             const foundItems = response.data.payload
-
             if (foundItems && foundItems.length === 1) {
-                const item = foundItems[0];
-                if (Number(item.stock) <= 0) {
-                    toast.error('Out of stock')
-                    return
-                }
-                addToCart({ ...item })
+                addProductToCart(foundItems[0])
                 setSearchTerm('')
             }
         } catch (error) {
@@ -151,6 +164,7 @@ const Orderform = ({ cartItems = [] }) => {
                 
                 return {
                     product_id: item.product_id,
+                    variant_id: item.variant_id || null,
                     quantity: item.quantity,
                     price: (parseFloat(basePrice) - discountPerUnit)
                 };
@@ -236,22 +250,68 @@ const Orderform = ({ cartItems = [] }) => {
 
                     {searchTerm.length > 0 && products && products.length > 0 && (
                         <div className="absolute top-full left-0 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto overflow-x-hidden">
-                            {products.map((product) => (
-                                <div key={product.product_id} onClick={() => {
-                                    if (Number(product.stock) > 0) {
-                                        addToCart({ ...product });
-                                        setSearchTerm('')
-                                    } else {
-                                        toast.error('Out of stock')
-                                    }
-                                    }} className="w-full cursor-pointer flex items-center justify-between p-3 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors">
+                            {products.map((product) => {
+                                const hasVariants = product.variants?.length > 0
+                                const totalStock = hasVariants
+                                    ? product.variants.reduce((s, v) => s + Number(v.stock), 0)
+                                    : Number(product.stock)
+                                return (
+                                    <div
+                                        key={product.product_id}
+                                        onClick={() => addProductToCart(product)}
+                                        className="w-full cursor-pointer flex items-center justify-between p-3 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors"
+                                    >
                                         <div className='flex flex-col'>
                                             <span className="text-sm font-bold text-slate-700">{product.name}</span>
-                                            <span className='text-[10px] text-slate-400 font-bold uppercase'>{product.unit} · Stock: {product.stock}</span>
+                                            <span className='text-[10px] text-slate-400 font-bold uppercase'>
+                                                {product.unit} · Stock: {totalStock}
+                                                {hasVariants && <span className='text-violet-400 ml-1'>· {product.variants.length} variants</span>}
+                                            </span>
                                         </div>
                                         <span className="text-sm font-bold text-primary">৳{saleType === 'wholesale' ? product.wholesale_price : (product.sale_price - product.discount_price)}</span>
                                     </div>
-                            ))}
+                                )
+                            })}
+                        </div>
+                    )}
+
+                    {/* ── Inline Variant Picker ── */}
+                    {pendingProduct && (
+                        <div className="absolute top-full left-0 w-full mt-2 bg-white border border-violet-200 rounded-xl shadow-xl z-50 overflow-hidden">
+                            <div className="flex items-center justify-between px-4 py-3 bg-violet-50 border-b border-violet-100">
+                                <div>
+                                    <p className="text-xs font-black uppercase tracking-widest text-violet-500">Select Variant</p>
+                                    <p className="text-sm font-bold text-slate-800">{pendingProduct.name}</p>
+                                </div>
+                                <button onClick={() => setPendingProduct(null)} className="text-slate-400 hover:text-slate-600 text-lg leading-none">×</button>
+                            </div>
+                            <div className="max-h-48 overflow-y-auto">
+                                {pendingProduct.variants.map(v => {
+                                    const oos = Number(v.stock) <= 0
+                                    return (
+                                        <div
+                                            key={v.variant_id}
+                                            onClick={() => {
+                                                if (!oos) {
+                                                    addProductToCart(pendingProduct, v)
+                                                    setPendingProduct(null)
+                                                }
+                                            }}
+                                            className={`flex items-center justify-between p-3 border-b border-slate-50 last:border-0 transition-colors ${
+                                                oos ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-violet-50'
+                                            }`}
+                                        >
+                                            <div className='flex flex-col'>
+                                                <span className="text-sm font-bold text-slate-700">{v.variant_name}</span>
+                                                <span className="text-[10px] text-slate-400 font-bold uppercase">Stock: {v.stock}{oos && ' · Out of stock'}</span>
+                                            </div>
+                                            <span className="text-sm font-bold text-primary">
+                                                ৳{Math.max(0, (parseFloat(pendingProduct.sale_price) + (parseFloat(v.price) || 0)) - (parseFloat(pendingProduct.discount_price) || 0))}
+                                            </span>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -286,6 +346,7 @@ const Orderform = ({ cartItems = [] }) => {
                             <div key={item.cartItemId} className='w-full grid grid-cols-6 sm:grid-cols-12 gap-2 p-2 rounded-xl hover:bg-slate-50 transition-all items-center'>
                                 <div className='col-span-2 sm:col-span-4 flex flex-col pr-1'>
                                     <p className='text-xs font-bold text-slate-700 truncate' title={item.name}>{item.name}</p>
+                                    {item.variant_name && <span className='text-[9px] text-violet-500 font-bold'>{item.variant_name}</span>}
                                     <span className='sm:hidden text-[9px] text-slate-400'>@ ৳{itemRate}</span>
                                 </div>
 

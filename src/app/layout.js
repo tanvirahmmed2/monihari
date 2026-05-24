@@ -1,26 +1,23 @@
 import ContextProvider from "@/components/helper/Context";
 import "./globals.css";
 import ToastProvider from "@/components/helper/ToastProvider";
-import { headers } from "next/headers";
+import siteConfig from "@/lib/siteConfig";
 
 export async function generateMetadata() {
-  const title = "Razers";
-  const description = "Premium Shopping Experience";
-
   return {
     title: {
-      default: title,
-      template: `%s | ${title}`,
+      default: siteConfig.meta_title || siteConfig.name,
+      template: `%s | ${siteConfig.name}`,
     },
-    description: description,
+    description: siteConfig.meta_description,
     icons: {
-      icon: "/icon.png",
-      apple: "/icon.png",
-    }
+      icon: siteConfig.favicon || "/icon.png",
+      apple: siteConfig.favicon || "/icon.png",
+    },
   };
 }
 
-export default async function RootLayout({ children }) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="w-full overflow-x-hidden relative bg-white">

@@ -26,6 +26,12 @@ const AddProductForm = () => {
         image: null,
     })
 
+    const [variants, setVariants] = useState([])
+
+    const addVariantRow = () => setVariants(prev => [...prev, { variant_name: '', price: '', stock: '' }])
+    const removeVariantRow = (i) => setVariants(prev => prev.filter((_, idx) => idx !== i))
+    const updateVariant = (i, field, value) => setVariants(prev => prev.map((v, idx) => idx === i ? { ...v, [field]: value } : v))
+
 
 
     const handleChange = (e) => {
@@ -55,6 +61,9 @@ const AddProductForm = () => {
                     newData.append(key, formData[key])
                 }
             })
+            if (variants.length > 0) {
+                newData.append('variants', JSON.stringify(variants))
+            }
 
 
 
@@ -67,6 +76,7 @@ const AddProductForm = () => {
                 wholeSalePrice: '', retailPrice: '', dealerPrice: '',
                 description: '', image: null,
             })
+            setVariants([])
 
         } catch (error) {
             console.error(error)
@@ -214,7 +224,51 @@ const AddProductForm = () => {
                     </div>
                 </div>
 
-
+                {/* Product Variants */}
+                <div className='flex flex-col gap-3 border border-slate-100 rounded-2xl p-5 bg-slate-50/40'>
+                    <div className='flex items-center justify-between'>
+                        <label className='text-xs font-bold text-slate-500 uppercase tracking-wider'>Product Variants <span className='text-slate-300 font-normal normal-case'>(Size / Colour)</span></label>
+                        <button type='button' onClick={addVariantRow} className='px-3 py-1.5 bg-slate-100 text-slate-600 font-bold rounded-lg hover:bg-primary hover:text-white transition-all text-xs'>+ Add Variant</button>
+                    </div>
+                    {variants.length === 0 && (
+                        <p className='text-xs text-slate-400'>No variants added. Click &quot;+ Add Variant&quot; to add sizes or colours with individual prices.</p>
+                    )}
+                    {variants.length > 0 && (
+                        <div className='flex flex-col gap-2'>
+                            <div className='grid grid-cols-12 gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1'>
+                                <span className='col-span-5'>Variant Name</span>
+                                <span className='col-span-3'>Price (৳)</span>
+                                <span className='col-span-3'>Stock</span>
+                                <span className='col-span-1'></span>
+                            </div>
+                            {variants.map((v, i) => (
+                                <div key={i} className='grid grid-cols-12 gap-2 items-center'>
+                                    <input
+                                        className='col-span-5 border border-slate-200 bg-white px-3 py-2 rounded-lg outline-none focus:border-primary text-sm'
+                                        placeholder='e.g. Red - XL'
+                                        value={v.variant_name}
+                                        onChange={e => updateVariant(i, 'variant_name', e.target.value)}
+                                    />
+                                    <input
+                                        type='number' min='0' step='0.01'
+                                        className='col-span-3 border border-slate-200 bg-white px-3 py-2 rounded-lg outline-none focus:border-primary text-sm'
+                                        placeholder='0.00'
+                                        value={v.price}
+                                        onChange={e => updateVariant(i, 'price', e.target.value)}
+                                    />
+                                    <input
+                                        type='number' min='0'
+                                        className='col-span-3 border border-slate-200 bg-white px-3 py-2 rounded-lg outline-none focus:border-primary text-sm'
+                                        placeholder='0'
+                                        value={v.stock}
+                                        onChange={e => updateVariant(i, 'stock', e.target.value)}
+                                    />
+                                    <button type='button' onClick={() => removeVariantRow(i)} className='col-span-1 text-rose-400 hover:text-rose-600 font-bold text-xl leading-none transition-colors text-center'>×</button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
                 <div className='pt-6 border-t border-slate-100 flex justify-center'>
                     <button className='w-full md:w-auto px-12 py-3.5 rounded-xl bg-primary text-white font-bold cursor-pointer hover:bg-primary-dark transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2' type='submit'>

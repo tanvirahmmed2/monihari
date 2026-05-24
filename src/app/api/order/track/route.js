@@ -37,10 +37,11 @@ const { searchParams } = new URL(req.url);
                 p.change_amount,
                 JSON_AGG(
                     JSON_BUILD_OBJECT(
-                        'name',     pr.name,
-                        'image',    pr.image,
-                        'quantity', oi.quantity,
-                        'price',    oi.price
+                        'name',         pr.name,
+                        'image',        pr.image,
+                        'quantity',     oi.quantity,
+                        'price',        oi.price,
+                        'variant_name', pv.variant_name
                     ) ORDER BY pr.name
                 ) AS items
             FROM orders o
@@ -48,6 +49,7 @@ const { searchParams } = new URL(req.url);
             JOIN payments    p  ON o.order_id     = p.order_id
             JOIN order_items oi ON o.order_id     = oi.order_id
             JOIN products    pr ON oi.product_id  = pr.product_id
+            LEFT JOIN product_variants pv ON oi.variant_id = pv.variant_id
         `;
 
         let query, values;

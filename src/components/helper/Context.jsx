@@ -2,11 +2,14 @@
 import axios from 'axios'
 import React, { createContext, useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
+import siteConfig from '@/lib/siteConfig'
 
 export const Context = createContext()
 
 const ContextProvider = ({ children, initialSiteData }) => {
-  const [siteData, setSiteData] = useState(initialSiteData)
+  // siteData is the manual store config — edit src/lib/siteConfig.js to change values
+  const [siteData, setSiteData] = useState(initialSiteData ?? siteConfig)
+
   const [isCategoryBox, setIsCategoryBox] = useState(false)
   const [editCategory, setEditCategory] = useState(null)
   const [isBrandBox, setIsBrandBox] = useState(false)
@@ -51,12 +54,26 @@ const ContextProvider = ({ children, initialSiteData }) => {
     }
   }, [cart, hydrated])
 
-  const addToCart = (product) => {
+  const addToCart = (product, variant = null) => {
     if (!product?.product_id) return;
 
-    const stock = Number(product.stock);
-    const salePrice = parseFloat(product.sale_price);
-    const cartItemId = String(product.product_id);
+    // Block if product has variants but none selected
+    const productHasVariants = product?.variants && product.variants.length > 0;
+    if (productHasVariants && !variant) {
+      toast.error("Please select a variant first!");
+      return;
+    }
+
+    const stock = variant ? Number(variant.stock) : Number(product.stock);
+    // variant.price is a ±delta from product.sale_price
+    const basePrice = parseFloat(product.sale_price) || 0;
+    const salePrice = variant
+      ? basePrice + (parseFloat(variant.price) || 0)
+      : basePrice;
+    // Unique cart key: product alone, or product+variant combo
+    const cartItemId = variant
+      ? `${product.product_id}-v${variant.variant_id}`
+      : String(product.product_id);
 
     if (stock <= 0) {
       toast.error("Item is out of stock!");
@@ -84,6 +101,7 @@ const ContextProvider = ({ children, initialSiteData }) => {
       const wholeSalePrice = parseFloat(product?.wholesale_price) || 0;
       const discountAmount = parseFloat(product?.discount_price) || 0;
 
+      const safeQty = 1;
       setCart((prev) => ({
         ...prev,
         items: [
@@ -91,14 +109,16 @@ const ContextProvider = ({ children, initialSiteData }) => {
           {
             cartItemId,
             product_id: product.product_id,
+            variant_id: variant?.variant_id || null,
+            variant_name: variant?.variant_name || null,
             name: product.name,
             image: product.image,
-            quantity: 1,
+            quantity: safeQty,
             stock: stock,
             sale_price: salePrice,
             wholesale_price: wholeSalePrice,
-            discount_price: discountAmount,
-            price: product.price !== undefined ? parseFloat(product.price) : salePrice
+            discount_price: discountAmount,  // apply discount for both variant and non-variant items
+            price: salePrice - discountAmount
           }
         ]
       }));
@@ -207,26 +227,33 @@ const ContextProvider = ({ children, initialSiteData }) => {
     fetchBrand()
     fetchSupplier()
     fetchCustomer()
-
   }, [])
 
   const [purchaseItems, setPurchaseItems] = useState([]);
 
-  const addToPurchase = (product) => {
+  const addToPurchase = (product, variant = null) => {
     setPurchaseItems((prev) => {
-      const existingItem = prev.find(item => item.product_id === product.product_id);
+      // Unique key: product alone, or product+variant combo
+      const key = variant
+        ? `${product.product_id}-v${variant.variant_id}`
+        : String(product.product_id);
+
+      const existingItem = prev.find(item => item._key === key);
 
       if (existingItem) {
         return prev.map(item =>
-          item.product_id === product.product_id
+          item._key === key
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
 
       return [...prev, {
+        _key: key,
         product_id: product.product_id,
-        name: product.name,
+        variant_id: variant?.variant_id || null,
+        variant_name: variant?.variant_name || null,
+        name: product.name + (variant ? ` (${variant.variant_name})` : ''),
         purchase_price: parseFloat(product.purchase_price) || 0,
         sale_price: parseFloat(product.sale_price) || 0,
         quantity: 1
@@ -234,8 +261,8 @@ const ContextProvider = ({ children, initialSiteData }) => {
     });
   };
 
-  const removeFromPurchase = (productId) => {
-    setPurchaseItems((prev) => prev.filter(item => item.product_id !== productId));
+  const removeFromPurchase = (key) => {
+    setPurchaseItems((prev) => prev.filter(item => item._key !== key && item.product_id !== key));
   };
 
   const clearPurchase = () => {

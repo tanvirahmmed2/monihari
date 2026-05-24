@@ -97,6 +97,18 @@ CREATE TABLE products (
 );
 
 -- =====================================================
+-- PRODUCT VARIANTS
+-- =====================================================
+CREATE TABLE product_variants (
+  variant_id   SERIAL PRIMARY KEY,
+  product_id   INT REFERENCES products(product_id) ON DELETE CASCADE,
+
+  variant_name VARCHAR(150) NOT NULL,  -- e.g. "Red - XL", "Blue - M"
+  price        NUMERIC(10,2) NOT NULL,
+  stock        INT DEFAULT 0
+);
+
+-- =====================================================
 -- SUPPLIERS
 -- =====================================================
 CREATE TABLE suppliers (
@@ -152,6 +164,7 @@ CREATE TABLE purchase_items (
 
   purchase_id INT REFERENCES purchases(purchase_id) ON DELETE CASCADE,
   product_id INT REFERENCES products(product_id),
+  variant_id  INT REFERENCES product_variants(variant_id) ON DELETE SET NULL,  -- NULL for non-variant items
 
   quantity INT NOT NULL,
   purchase_price NUMERIC(10,2) NOT NULL
@@ -224,8 +237,9 @@ CREATE TABLE order_items (
   order_item_id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES tenants(tenant_id),
 
-  order_id INT REFERENCES orders(order_id) ON DELETE CASCADE,
+  order_id   INT REFERENCES orders(order_id) ON DELETE CASCADE,
   product_id INT REFERENCES products(product_id),
+  variant_id INT REFERENCES product_variants(variant_id) ON DELETE SET NULL,  -- NULL for non-variant items
 
   quantity INT NOT NULL,
   price NUMERIC(10,2) NOT NULL

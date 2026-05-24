@@ -1,7 +1,11 @@
-export const printPurchaseInvoice = (purchase) => {
+export const printPurchaseInvoice = (purchase, siteData) => {
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     document.body.appendChild(iframe);
+
+    const storeName    = siteData.name;
+    const storeAddress = siteData.address;
+    const storePhone   = siteData.phone;
 
     const invoiceContent = `
       <!DOCTYPE html>
@@ -38,9 +42,9 @@ export const printPurchaseInvoice = (purchase) => {
         <body>
           <div class="header-container">
             <div class="company-brand">
-              <h1 style="margin:0;">NIZAM VARIETIES STORE</h1>
-              <p style="margin:0;">Pakuritala, Tarakanda, 2252</p>
-              <p style="margin:0;">Contact: 01645-172356</p>
+              <h1 style="margin:0;">${storeName.toUpperCase()}</h1>
+              ${storeAddress ? `<p style="margin:0;">${storeAddress}</p>` : ''}
+              ${storePhone   ? `<p style="margin:0;">Contact: ${storePhone}</p>` : ''}
             </div>
             <div class="invoice-details">
               <h2 style="margin:0; color: #64748b;">PURCHASE RECORD</h2>
@@ -108,7 +112,7 @@ export const printPurchaseInvoice = (purchase) => {
 
           <div class="footer">
             <p>This is a computer-generated document. No signature is required.</p>
-            <p>© ${new Date().getFullYear()} Razers LTD</p>
+            <p>© ${new Date().getFullYear()} ${storeName}</p>
           </div>
         </body>
       </html>
