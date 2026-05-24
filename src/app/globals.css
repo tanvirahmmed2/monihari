@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: var(--color-sky-500);
-  --color-primary-dark: var(--color-sky-600);
-  --color-accent: var(--color-orange-400);
+  --color-primary: var(--color-indigo-600);
+  --color-primary-dark: var(--color-indigo-700);
+  --color-accent: var(--color-amber-500);
   
   --font-sans: "Inter", "Roboto", "sans-serif";
   --font-serif: "Outfit", "serif";
@@ -11,20 +11,42 @@
 
 @layer base {
   body {
-    @apply text-slate-900 selection:bg-sky-100 selection:text-sky-900;
+    @apply bg-slate-50/50 text-slate-900 antialiased selection:bg-indigo-100 selection:text-indigo-900;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif;
+    @apply font-serif tracking-tight;
+  }
+
+  /* Custom Modern Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20;
+    @apply bg-white/75 backdrop-blur-lg border border-white/40 shadow-xs;
   }
   
   .glass-dark {
-    @apply bg-black/50 backdrop-blur-md border border-white/10;
+    @apply bg-slate-900/80 backdrop-blur-lg border border-slate-800 shadow-md;
+  }
+
+  .glow-indigo {
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.15);
+  }
+
+  .glow-amber {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
   }
 }
+

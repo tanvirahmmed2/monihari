@@ -23,6 +23,21 @@ const { id } = await params;
             }, { status: 404 });
         }
 
+        // Attach variants to each product
+        const productIds = result.map(p => p.product_id);
+        const variantsRes = await pool.query(
+            `SELECT * FROM product_variants WHERE product_id = ANY($1) ORDER BY variant_id ASC`,
+            [productIds]
+        );
+        const variantsByProduct = {};
+        for (const v of variantsRes.rows) {
+            if (!variantsByProduct[v.product_id]) variantsByProduct[v.product_id] = [];
+            variantsByProduct[v.product_id].push(v);
+        }
+        for (const p of result) {
+            p.variants = variantsByProduct[p.product_id] || [];
+        }
+
         return NextResponse.json({
             success: true, message: 'Successfully fetched data', payload: result
         }, { status: 200 });

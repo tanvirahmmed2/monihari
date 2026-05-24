@@ -88,8 +88,8 @@ const VariantModal = ({ product, onClose, onConfirm }) => {
                     ${outOfStock
                       ? 'opacity-40 cursor-not-allowed border-gray-100 bg-gray-50'
                       : isSelected
-                        ? 'border-sky-500 bg-sky-50 shadow-sm'
-                        : 'border-gray-200 hover:border-sky-300 hover:bg-sky-50/50'
+                        ? 'border-indigo-600 bg-indigo-50/50 shadow-xs'
+                        : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/20'
                     }
                   `}
                 >
@@ -103,12 +103,12 @@ const VariantModal = ({ product, onClose, onConfirm }) => {
 
                   {/* Name / size / color label */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate">
+                    <p className="text-xs font-bold text-gray-800 truncate">
                       {v.variant_name || [v.size, v.color].filter(Boolean).join(' / ') || `Variant #${v.variant_id}`}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5">
+                    <p className="text-[10px] text-gray-400 mt-0.5">
                       {outOfStock ? (
-                        <span className="flex items-center gap-1 text-red-400"><PackageX size={11} /> Out of stock</span>
+                        <span className="flex items-center gap-1 text-red-400"><PackageX size={10} /> Out of stock</span>
                       ) : (
                         `${v.stock} in stock`
                       )}
@@ -117,9 +117,9 @@ const VariantModal = ({ product, onClose, onConfirm }) => {
 
                   {/* Price */}
                   <div className="text-right flex-shrink-0">
-                    <p className="text-sm font-bold text-gray-900">৳{price}</p>
+                    <p className="text-xs font-black text-gray-900">৳{price}</p>
                     {delta !== 0 && (
-                      <p className={`text-[10px] font-semibold ${delta > 0 ? 'text-orange-400' : 'text-green-500'}`}>
+                      <p className={`text-[9px] font-bold ${delta > 0 ? 'text-amber-500' : 'text-emerald-500'}`}>
                         {delta > 0 ? `+৳${delta}` : `-৳${Math.abs(delta)}`}
                       </p>
                     )}
@@ -127,8 +127,8 @@ const VariantModal = ({ product, onClose, onConfirm }) => {
 
                   {/* Selected indicator */}
                   {isSelected && (
-                    <div className="w-5 h-5 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
-                      <Check size={11} className="text-white" />
+                    <div className="w-4 h-4 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0">
+                      <Check size={9} className="text-white" />
                     </div>
                   )}
                 </button>
@@ -142,17 +142,17 @@ const VariantModal = ({ product, onClose, onConfirm }) => {
               onClick={handleConfirm}
               disabled={!selected}
               className={`
-                w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2
+                w-full py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2
                 transition-all duration-200
                 ${selected
-                  ? 'bg-gray-900 text-white hover:bg-sky-600 active:scale-95'
+                  ? 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 shadow-md shadow-indigo-600/10'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 }
               `}
             >
-              <ShoppingCart size={15} />
+              <ShoppingCart size={13} />
               {selected ? `Add "${selected.variant_name || 'Selected'}" to Cart` : 'Select a variant to continue'}
-              {selected && <ChevronRight size={14} />}
+              {selected && <ChevronRight size={12} />}
             </button>
           </div>
         </motion.div>
@@ -206,71 +206,73 @@ const Item = ({ product }) => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.35 }}
-        className="group relative w-full flex flex-col bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300"
+        className="group relative w-full flex flex-col bg-white rounded-[20px] overflow-hidden border border-slate-100/80 shadow-xs hover:-translate-y-1 hover:border-indigo-100 hover:shadow-lg hover:shadow-indigo-600/5 transition-all duration-300"
       >
-        <Link href={`/products/${product.slug}`} className="relative block w-full overflow-hidden" style={{ aspectRatio: '1/1' }}>
+        <Link href={`/products/${product.slug}`} className="relative block w-full overflow-hidden bg-slate-50" style={{ aspectRatio: '1/1' }}>
 
-          <div className="absolute top-2 left-2 z-20 flex flex-col gap-1">
+          <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1">
             {isOutOfStock ? (
-              <span className="bg-gray-800 text-white text-[10px] font-bold px-2 py-0.5 rounded-full leading-tight">
+              <span className="bg-slate-900/90 text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md leading-none backdrop-blur-xs shadow-xs">
                 Out of Stock
               </span>
             ) : (
               <>
                 {discountPct > 0 && (
-                  <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full leading-tight">
+                  <span className="bg-rose-500 text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md leading-none shadow-xs">
                     -{discountPct}%
                   </span>
                 )}
                 {isNew && discountPct === 0 && (
-                  <span className="bg-sky-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full leading-tight">
+                  <span className="bg-indigo-600 text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md leading-none shadow-xs">
                     New
                   </span>
                 )}
               </>
             )}
             {hasVariants && !isOutOfStock && (
-              <span className="bg-violet-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full leading-tight">
+              <span className="bg-violet-600 text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md leading-none shadow-xs">
                 Variants
               </span>
             )}
           </div>
 
-          
           <Image
             src={product?.image || '/placeholder.jpg'}
             alt={product?.name || 'Product'}
             width={400}
             height={400}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
+          <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/2.5 transition-colors duration-300 pointer-events-none" />
         </Link>
 
-        <div className="flex flex-col flex-1 p-3 gap-2">
+        <div className="flex flex-col flex-1 p-4 gap-2.5">
 
           {/* Category / Brand */}
           {(product?.category_name || product?.brand_name) && (
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 line-clamp-1">
+            <p className="text-[8px] font-black uppercase tracking-widest text-slate-400/80 line-clamp-1">
               {product.category_name || product.brand_name}
             </p>
           )}
 
           {/* Name */}
           <Link href={`/products/${product.slug}`}>
-            <h2 className="text-sm font-semibold text-gray-800 hover:text-sky-600 transition-colors line-clamp-2 leading-snug">
+            <h2 className="text-xs font-bold text-slate-800 hover:text-indigo-600 transition-colors line-clamp-2 leading-snug tracking-tight">
               {product?.name}
             </h2>
           </Link>
 
           {/* Price row */}
-          <div className="flex items-baseline gap-2 mt-auto pt-1">
-            <span className="text-base font-bold text-gray-900">৳{currentPrice}</span>
-            {discountPct > 0 && (
-              <span className="text-xs text-gray-400 line-through">৳{salePrice}</span>
-            )}
+          <div className="flex items-center justify-between mt-auto pt-1 flex-wrap gap-2">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xs font-black text-slate-950">৳{currentPrice}</span>
+              {discountPct > 0 && (
+                <span className="text-[9px] text-slate-400 line-through">৳{salePrice}</span>
+              )}
+            </div>
             {hasVariants && (
-              <span className="text-[10px] text-violet-500 font-semibold ml-auto">
-                {product.variants.length} options
+              <span className="bg-indigo-50 text-indigo-600 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+                {product.variants.length} Opts
               </span>
             )}
           </div>
@@ -280,30 +282,30 @@ const Item = ({ product }) => {
             onClick={handleAddToCart}
             disabled={isOutOfStock}
             className={`
-              mt-1 w-full flex items-center justify-center gap-2
-              py-2.5 rounded-lg text-sm font-semibold
-              transition-all duration-300
+              w-full flex items-center justify-center gap-1.5
+              py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider
+              transition-all duration-300 cursor-pointer
               ${isOutOfStock
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                ? 'bg-slate-50 text-slate-400 cursor-not-allowed border border-slate-100/50'
                 : added
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-900 text-white hover:bg-sky-600 active:scale-95'
+                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/10'
+                  : 'bg-slate-900 text-white hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-600/10 active:scale-95'
               }
             `}
           >
             {isOutOfStock ? (
               <>
-                <PackageX size={15} />
+                <PackageX size={12} />
                 Out of Stock
               </>
             ) : added ? (
               <>
-                <Check size={15} />
+                <Check size={12} />
                 Added
               </>
             ) : (
               <>
-                <ShoppingCart size={15} />
+                <ShoppingCart size={12} />
                 {hasVariants ? 'Choose Variant' : 'Add to Cart'}
               </>
             )}

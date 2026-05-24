@@ -8,37 +8,37 @@ const DashboardTopbar = () => {
     const { isDashboardSidebar, setIsDashboardSidebar, userData } = useContext(Context)
 
     return (
-        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200 h-16 flex items-center justify-between px-4 lg:px-8 transition-all duration-300 w-full shadow-sm">
+        <header className="sticky top-0 z-40 bg-white/75 backdrop-blur-lg border-b border-slate-100 h-16 flex items-center justify-between px-6 lg:px-8 transition-all duration-300 w-full shadow-xs">
             <div className="flex items-center gap-4">
                 <button
                     onClick={() => setIsDashboardSidebar(!isDashboardSidebar)}
-                    className="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-100"
+                    className="p-2 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-50"
                     title={isDashboardSidebar ? "Close Sidebar" : "Open Sidebar"}
                 >
-                    {isDashboardSidebar ? <CgMenuMotion size={22} /> : <RiMenuLine size={22} />}
+                    {isDashboardSidebar ? <CgMenuMotion size={20} /> : <RiMenuLine size={20} />}
                 </button>
                 
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
-                <button className="p-2 relative rounded-full hover:bg-slate-100 text-slate-600 transition-colors">
-                    <RiNotification3Line size={20} />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+                <button className="p-2 relative rounded-xl hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition-colors">
+                    <RiNotification3Line size={18} />
+                    <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
                 </button>
-                <button className="p-2 hidden sm:block rounded-full hover:bg-slate-100 text-slate-600 transition-colors">
-                    <RiSettings3Line size={20} />
+                <button className="p-2 hidden sm:block rounded-xl hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition-colors">
+                    <RiSettings3Line size={18} />
                 </button>
                 
-                <div className="flex items-center gap-3 pl-2 sm:pl-4 border-l border-slate-200 cursor-pointer hover:opacity-80 transition-opacity">
+                <div className="flex items-center gap-3 pl-2 sm:pl-4 border-l border-slate-100 cursor-pointer hover:opacity-80 transition-opacity">
                     <div className="flex-col items-end hidden sm:flex">
-                        <span className="text-sm font-semibold text-slate-800 leading-tight">
+                        <span className="text-xs font-bold text-slate-800 leading-tight">
                             {userData?.name || 'Administrator'}
                         </span>
-                        <span className="text-xs text-slate-500 font-medium">
+                        <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">
                             {userData?.role || 'Admin'}
                         </span>
                     </div>
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500 text-white flex items-center justify-center font-bold shadow-md border border-white">
+                    <div className="w-8.5 h-8.5 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center font-black text-xs shadow-md border-2 border-white ring-1 ring-slate-100">
                         {(userData?.name?.[0] || 'A').toUpperCase()}
                     </div>
                 </div>

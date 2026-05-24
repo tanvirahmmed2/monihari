@@ -22,10 +22,33 @@ const baseSelect = `
             []
         );
 
+        const latestProducts = latestRes.rows;
+        const topProducts = topRes.rows;
+        const allProducts = [...latestProducts, ...topProducts];
+
+        if (allProducts.length > 0) {
+            const productIds = Array.from(new Set(allProducts.map(p => p.product_id)));
+            const variantsRes = await pool.query(
+                `SELECT * FROM product_variants WHERE product_id = ANY($1) ORDER BY variant_id ASC`,
+                [productIds]
+            );
+            const variantsByProduct = {};
+            for (const v of variantsRes.rows) {
+                if (!variantsByProduct[v.product_id]) variantsByProduct[v.product_id] = [];
+                variantsByProduct[v.product_id].push(v);
+            }
+            for (const p of latestProducts) {
+                p.variants = variantsByProduct[p.product_id] || [];
+            }
+            for (const p of topProducts) {
+                p.variants = variantsByProduct[p.product_id] || [];
+            }
+        }
+
         return NextResponse.json({
             success: true,
-            latest: latestRes.rows,
-            top: topRes.rows,
+            latest: latestProducts,
+            top: topProducts,
         }, { status: 200 });
 
     } catch (error) {

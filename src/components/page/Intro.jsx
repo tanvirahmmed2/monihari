@@ -26,61 +26,81 @@ const Intro = () => {
     }, [])
 
     return (
-        <div className='w-full h-auto flex flex-col items-center justify-center gap-4 md:gap-12'>
-
-            <div className='w-full overflow-hidden '>
-                <Image
-                    src={images[currentIndex]}
-                    height={1000}
-                    className='object-cover w-full aspect-video md:aspect-16/5 overflow-hidden shadow-lg'
-                    alt='Fashion Showcase'
-                    width={1000}
-                />
-
-                <div className='absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10'>
-                    {images.map((_, i) => (
-                        <div
-                            key={i}
-                            className={`h-1 rounded-full transition-all duration-500 ${i === currentIndex ? 'w-8 bg-white' : 'w-2 bg-white/40'}`}
-                        />
-                    ))}
-                </div>
-            </div>
-
-            <div className='w-full flex flex-col items-center justify-center gap-2 p-10'>
+        <div className='w-full max-w-7xl mx-auto px-6 md:px-8 py-8 lg:py-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center'>
+            
+            {/* Left Column: Text & CTA */}
+            <div className='lg:col-span-5 flex flex-col items-start text-left gap-6 order-2 lg:order-1'>
                 <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className='w-full flex flex-col items-center justify-center'
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className='space-y-4'
                 >
-                    <div className='inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-primary mb-6 shadow-sm'>
-                        <RefreshCw size={12} className='animate-spin' />
-                        Updated Collection 2026
+                    <div className='inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-[10px] font-black uppercase tracking-widest text-indigo-600 shadow-xs'>
+                        <RefreshCw size={11} className='animate-spin' />
+                        Collection 2026
                     </div>
-                    <h2 className='text-4xl flex gap-4  md:text-6xl lg:text-7xl font-black text-slate-900 leading-[0.9] tracking-tighter mb-6'>
+                    
+                    <h1 className='text-5xl md:text-6xl font-black text-slate-950 tracking-tight leading-[0.95]'>
                         STYLE <br />
-                        <span className='text-primary underline underline-offset-8 decoration-primary/20'>EVOLVED.</span>
-                    </h2>
-                    <p className='text-base md:text-lg text-slate-500 font-medium leading-relaxed max-w-md mx-auto lg:mx-0'>
-                        Experience the flawless fusion of premium aesthetics and daily utility. {siteData?.website_name || 'NIJAM'} defines the next generation.
+                        <span className='bg-linear-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent underline decoration-indigo-500/20 underline-offset-8'>EVOLVED.</span>
+                    </h1>
+                    
+                    <p className='text-sm md:text-base text-slate-500 font-medium leading-relaxed max-w-md'>
+                        Experience the flawless fusion of premium aesthetics and daily utility. {siteData?.name || 'Monihari'} defines the next generation of retail.
                     </p>
                 </motion.div>
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3, duration: 0.8 }}
-                    className='w-full flex items-center justify-center md:gap-10 flex-col gap-4 md:flex-row'
+                    transition={{ delay: 0.15, duration: 0.6 }}
+                    className='flex flex-col sm:flex-row gap-3 w-full sm:w-auto'
                 >
-                    <Link href='/products' className='w-full sm:w-auto group px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-3 hover:bg-primary transition-all active:scale-95'>
-                        Shop Now
-                        <ArrowRight size={18} className='group-hover:translate-x-1 transition-transform' />
+                    <Link href='/products' className='group px-8 py-3.5 bg-slate-900 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-3 hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-600/20 transition-all active:scale-[0.98]'>
+                        Explore Shop
+                        <ArrowRight size={15} className='group-hover:translate-x-1 transition-transform' />
                     </Link>
-                    <Link href='/offers' className='w-full sm:w-auto px-8 py-4 bg-white text-slate-900 border border-slate-200 rounded-2xl font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 text-center'>
-                        View Offers
+                    <Link href='/offers' className='px-8 py-3.5 bg-white text-slate-700 border border-slate-200 rounded-xl font-bold text-xs hover:bg-slate-50 hover:text-slate-900 transition-all active:scale-[0.98] text-center'>
+                        View Deals
                     </Link>
                 </motion.div>
+            </div>
+
+            {/* Right Column: Image Slider Card */}
+            <div className='lg:col-span-7 order-1 lg:order-2 relative w-full aspect-video lg:aspect-16/10 rounded-3xl overflow-hidden bg-slate-100 shadow-xl border border-slate-200/50 group'>
+                <AnimatePresence mode='wait'>
+                    <motion.div
+                        key={currentIndex}
+                        initial={{ opacity: 0, scale: 1.05 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        transition={{ duration: 0.6 }}
+                        className='absolute inset-0'
+                    >
+                        <Image
+                            src={images[currentIndex]}
+                            fill
+                            priority
+                            className='object-cover'
+                            alt='Showcase Image'
+                            sizes='(max-w-1024px) 100vw, 50vw'
+                        />
+                        <div className='absolute inset-0 bg-gradient-to-t from-slate-950/45 via-transparent to-transparent' />
+                    </motion.div>
+                </AnimatePresence>
+
+                {/* Dot Indicators */}
+                <div className='absolute bottom-6 left-6 flex gap-1.5 z-10'>
+                    {images.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setCurrentIndex(i)}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/50 hover:bg-white/80'}`}
+                            aria-label={`Go to slide ${i + 1}`}
+                        />
+                    ))}
+                </div>
             </div>
 
         </div>

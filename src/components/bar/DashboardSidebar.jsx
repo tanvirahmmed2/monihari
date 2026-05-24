@@ -24,14 +24,14 @@ const MenuItem = ({ href, icon: Icon, label, isOpen }) => {
   return (
     <Link 
       href={href} 
-      className={`group flex flex-row gap-4 items-center px-3 py-2.5 transition-all rounded-xl mx-2 ${
+      className={`group flex flex-row gap-3.5 items-center px-3.5 py-2.5 transition-all rounded-xl mx-3.5 ${
         isActive 
-          ? 'bg-linear-to-r from-sky-500 to-indigo-500 text-white shadow-md shadow-sky-500/20 font-medium' 
-          : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'
+          ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/10 font-bold' 
+          : 'text-slate-400 hover:bg-white/5 hover:text-white font-bold'
       }`}
     >
-      <Icon size={20} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-white transition-colors'}`} />
-      {isOpen && <span className="whitespace-nowrap text-sm tracking-wide">{label}</span>}
+      <Icon size={18} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300 transition-colors'}`} />
+      {isOpen && <span className="whitespace-nowrap text-xs tracking-wide">{label}</span>}
     </Link>
   )
 }
@@ -80,16 +80,16 @@ const DashboardSidebar = () => {
       {/* Mobile Backdrop Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[90] md:hidden transition-opacity"
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[90] md:hidden transition-opacity"
           onClick={() => setIsDashboardSidebar(false)}
         />
       )}
       
-      <aside className={`select-none fixed top-0 left-0 z-[100] text-slate-300 bg-slate-900 h-screen transition-transform duration-300 flex flex-col py-4 overflow-y-auto custom-scrollbar border-r border-slate-800 w-64 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`select-none fixed top-0 left-0 z-[100] text-slate-300 bg-slate-950 h-screen transition-transform duration-300 flex flex-col py-6 overflow-y-auto custom-scrollbar border-r border-slate-900 w-64 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-center h-12 mb-6 px-2">
       </div>
 
-      <div className="pb-4 border-b border-slate-800 mb-2">
+      <div className="pb-4 border-b border-slate-900 mb-2">
         <MenuItem href="/dashboard" icon={RiHome5Line} label="Dashboard Home" isOpen={isOpen} />
       </div>
 
@@ -97,8 +97,8 @@ const DashboardSidebar = () => {
         {(role === 'sales') && (
           <>
             {(isOpen) && (
-              <p className="font-bold text-[10px] flex items-center gap-2 px-4 mb-2 uppercase tracking-wider text-slate-500 mt-2">
-                <RiShoppingCart2Line size={14} /> Sales & POS
+              <p className="font-extrabold text-[9px] flex items-center gap-2 px-5 mb-2 uppercase tracking-wider text-slate-600 mt-2">
+                <RiShoppingCart2Line size={13} /> Sales & POS
               </p>
             )}
             <MenuItem href="/dashboard/sales/pos" icon={RiShoppingCart2Line} label="POS System" isOpen={isOpen} />
@@ -115,18 +115,18 @@ const DashboardSidebar = () => {
         {(role === 'manager') && (
           <>
             {(isOpen) && (
-              <p className="font-bold text-[10px] flex items-center gap-2 px-4 mb-2 uppercase tracking-wider text-slate-500 mt-4">
-                <RiProductHuntLine size={14} /> Inventory & Stock
+              <p className="font-extrabold text-[9px] flex items-center gap-2 px-5 mb-2 uppercase tracking-wider text-slate-600 mt-4">
+                <RiProductHuntLine size={13} /> Inventory & Stock
               </p>
             )}
             <div className="flex flex-col gap-1">
               {(isOpen) && (
-                <div onClick={() => setProductsMenuOpen(!productsMenuOpen)} className="flex items-center gap-4 px-4 py-2 cursor-pointer text-[13px] font-medium text-slate-400 hover:text-white transition-colors">
-                  <RiProductHuntLine size={18} /> Products 
+                <div onClick={() => setProductsMenuOpen(!productsMenuOpen)} className="flex items-center gap-3.5 px-5 py-2 cursor-pointer text-[12px] font-bold text-slate-400 hover:text-white transition-colors">
+                  <RiProductHuntLine size={18} className="text-slate-500" /> Products 
                   <FaChevronDown size={10} className={`ml-auto transition-transform ${productsMenuOpen ? 'rotate-180' : ''}`} />
                 </div>
               )}
-              <div className={`${(isOpen && productsMenuOpen) ? 'block' : 'hidden'} pl-4 flex flex-col gap-1 border-l-2 border-slate-800 ml-6 my-1`}>
+              <div className={`${(isOpen && productsMenuOpen) ? 'block' : 'hidden'} pl-4 flex flex-col gap-1 border-l border-slate-900 ml-8 my-1`}>
                 <MenuItem href="/dashboard/manager/newproduct" icon={RiPriceTag3Line} label="New Product" isOpen={isOpen} />
                 <MenuItem href="/dashboard/manager/products" icon={RiShoppingBag3Line} label="Product List" isOpen={isOpen} />
                 <MenuItem href="/dashboard/manager/damage" icon={RiAlertLine} label="Damage Record" isOpen={isOpen} />
@@ -139,8 +139,8 @@ const DashboardSidebar = () => {
             <MenuItem href="/dashboard/manager/customer" icon={RiUser3Line} label="Customer" isOpen={isOpen} />
             
             {(isOpen) && (
-              <p className="font-bold text-[10px] flex items-center gap-2 px-4 mb-2 uppercase tracking-wider text-slate-500 mt-4">
-                <BiPurchaseTagAlt size={14} /> Purchase Management
+              <p className="font-extrabold text-[9px] flex items-center gap-2 px-5 mb-2 uppercase tracking-wider text-slate-600 mt-4">
+                <BiPurchaseTagAlt size={13} /> Purchase Management
               </p>
             )}
             <MenuItem href="/dashboard/manager/purchase" icon={RiShoppingCart2Line} label="New Purchase" isOpen={isOpen} />
@@ -148,8 +148,8 @@ const DashboardSidebar = () => {
             <MenuItem href="/dashboard/manager/purchase-transactions" icon={TbReportMoney} label="Purchase Transactions" isOpen={isOpen} />
             
             {(isOpen) && (
-              <p className="font-bold text-[10px] flex items-center gap-2 px-4 mb-2 uppercase tracking-wider text-slate-500 mt-4">
-                <TbMoneybag size={14} /> Finance & Reports
+              <p className="font-extrabold text-[9px] flex items-center gap-2 px-5 mb-2 uppercase tracking-wider text-slate-600 mt-4">
+                <TbMoneybag size={13} /> Finance & Reports
               </p>
             )}
             <MenuItem href="/dashboard/manager/ledger" icon={RiFileChartLine} label="Payment Ledger" isOpen={isOpen} />
@@ -164,8 +164,8 @@ const DashboardSidebar = () => {
         {(role === 'admin') && (
           <>
             {(isOpen) && (
-              <p className="font-bold text-[10px] flex items-center gap-2 px-4 mb-2 uppercase tracking-wider text-slate-500 mt-4">
-                <TbReportAnalytics size={14} /> Admin & Analytics
+              <p className="font-extrabold text-[9px] flex items-center gap-2 px-5 mb-2 uppercase tracking-wider text-slate-600 mt-4">
+                <TbReportAnalytics size={13} /> Admin & Analytics
               </p>
             )}
             <MenuItem href="/dashboard/admin/analytics" icon={TbReportAnalytics} label="Business Analytics" isOpen={isOpen} />
@@ -175,9 +175,9 @@ const DashboardSidebar = () => {
             
             <button 
               onClick={downloadDB} 
-              className="flex items-center justify-center gap-2 px-2 py-2.5 text-sm font-semibold bg-slate-800 text-sky-400 rounded-xl hover:bg-slate-700 transition-colors mx-4 my-2 border border-slate-700"
+              className="flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold bg-slate-900 text-indigo-400 rounded-xl hover:bg-slate-800 transition-colors mx-5 my-3 border border-slate-800/80 cursor-pointer"
             >
-              <BsFillHouseGearFill size={16} />
+              <BsFillHouseGearFill size={14} />
               <span>Backup Data</span>
             </button>
           </>
@@ -185,10 +185,10 @@ const DashboardSidebar = () => {
       </div>
 
 
-      <div className="mt-auto pt-6 border-t border-slate-800 flex flex-col gap-1">
+      <div className="mt-auto pt-6 border-t border-slate-900 flex flex-col gap-1">
         {(isOpen) && (
-          <p className="font-bold text-[10px] flex items-center gap-2 px-4 mb-2 uppercase tracking-wider text-slate-500">
-            <BsFillHouseGearFill size={14} /> Account
+          <p className="font-extrabold text-[9px] flex items-center gap-2 px-5 mb-2 uppercase tracking-wider text-slate-600">
+            <BsFillHouseGearFill size={13} /> Account
           </p>
         )}
         <MenuItem href="/dashboard/account" icon={RiUser3Line} label="My Account" isOpen={isOpen} />
@@ -197,7 +197,7 @@ const DashboardSidebar = () => {
         {(isOpen) && (
           <button 
             onClick={handleLogout} 
-            className="flex items-center justify-center w-[calc(100%-2rem)] bg-rose-500/10 text-rose-500 py-2.5 rounded-xl mx-4 mt-4 cursor-pointer font-bold hover:bg-rose-500 hover:text-white transition-colors border border-rose-500/20 shadow-sm"
+            className="flex items-center justify-center w-[calc(100%-2.5rem)] bg-rose-500/10 text-rose-500 py-2.5 rounded-xl mx-5 mt-4 cursor-pointer font-bold hover:bg-rose-500 hover:text-white transition-colors border border-rose-500/20 shadow-sm text-xs uppercase tracking-wider"
           >
             Logout
           </button>
@@ -207,6 +207,5 @@ const DashboardSidebar = () => {
     </>
   )
 }
-
 
 export default DashboardSidebar
