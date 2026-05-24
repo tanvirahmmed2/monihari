@@ -11,7 +11,6 @@ export async function POST(req) {
     try {
 const { email, password } = await req.json();
 
-        // 1. Validate Input
         const existsUser = await pool.query(
             `SELECT * FROM users WHERE email=$1`, 
             [email]
@@ -44,7 +43,7 @@ const { email, password } = await req.json();
             }
         }, { status: 200 });
 
-        response.cookies.set("nvs_user_token", token, {
+        response.cookies.set("your-token", token, {
             httpOnly: true, 
             path: "/",      
             maxAge: TWENTY_YEARS, 
@@ -66,7 +65,7 @@ export async function GET() {
             message: "Logout successful",
         });
 
-        res.cookies.set("nvs_user_token", "", {
+        res.cookies.set("your-token", "", {
             httpOnly: true,
             expires: new Date(0),
             path: "/",

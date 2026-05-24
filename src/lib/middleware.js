@@ -4,12 +4,12 @@ import { JWT_SECRET } from "./database/secret";
 import { pool } from "./database/db";
 /**
  * Common function to get the authenticated user from the request.
- * It uses the 'nvs_user_token' cookie and validates it against the users table.
+ * It uses the 'your-token' cookie and validates it against the users table.
  */
 async function getAuthenticatedUser() {
     try {
         const cookieStore = await cookies(); 
-        const token = cookieStore.get('nvs_user_token')?.value;
+        const token = cookieStore.get('your-token')?.value;
 
         if (!token) return null;
 
