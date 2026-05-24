@@ -1,8 +1,8 @@
 
 const siteConfig = {
-    name:            'Razers',
-    business_name:   'Razers Store',
-    email:           'info@Razers.com',
+    name:            'Monihari',
+    business_name:   'Monihari Store',
+    email:           'info@monihari.com',
     phone:           '01700-000000',
     address:         'Pakuritala Bazar, Tarakanda',
     city:            'Netrokona',
@@ -10,7 +10,7 @@ const siteConfig = {
     logo:            '',
     favicon:         '/icon.png',
     primary_color:   '#10b981',
-    meta_title:      'Razers — Premium Shopping',
+    meta_title:      'Monihari — Premium Shopping',
     meta_description:'Your one-stop shop for premium quality variety products. We bring excellence to your doorstep with every purchase.',
     facebook:        '',
     instagram:       '',
