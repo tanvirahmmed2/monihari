@@ -1,5 +1,5 @@
 
-export const BASE_URL = 'http://localhost:3000';
+export const BASE_URL = 'https://razers-demo.vercel.app';
 
 export const CLOUDINARY_NAME = process.env.CLOUDINARY_NAME;
 export const CLOUDINARY_API = process.env.CLOUDINARY_API;
